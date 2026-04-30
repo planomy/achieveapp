@@ -1,1861 +1,1763 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Writing Exercise Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<title>Live Writing Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#0b0d12;
-  --s1:#111318;
-  --s2:#161a24;
-  --s3:#1c2030;
-  --s4:#222840;
-  --bd:#252d42;
-  --bd2:#333d58;
-  --gold:#f0b429;
-  --gold-d:#8a6510;
-  --gold-bg:rgba(240,180,41,0.07);
-  --teal:#2dd4bf;
-  --teal-d:#1a6e64;
-  --red:#f87171;
-  --tx:#d8dce8;
-  --tx2:#7e8aa0;
-  --tx3:#424e66;
-  --c0:#818cf8;
-  --c1:#2dd4bf;
-  --c2:#f0b429;
-  --pick:#e07020;
-  --pick-d:#a34812;
-  --pick-bg:rgba(224,112,32,0.14);
-  --chip-off-bg:#181c26;
-  --chip-off-bd:#2a3145;
-  --chip-off-tx:#5c6578;
-  --r:12px;
-  --rl:18px;
-  --gen-bg:var(--gold);
-  --gen-fg:#0b0d12;
+  --page-bg1: #e8e4f4;
+  --page-bg2: #f3effa;
+  --shell-bg: #ffffff;
+  --shell-shadow: 0 24px 48px -12px rgba(91, 33, 182, 0.18), 0 12px 24px -8px rgba(30, 27, 75, 0.08);
+  --sidebar-start: #6d28d9;
+  --sidebar-end: #5b21b6;
+  --sidebar-highlight: rgba(255,255,255,0.12);
+  --main-fill: #faf9ff;
+  --card-tint: #f4f0fe;
+  --border: rgba(91, 33, 182, 0.1);
+  --border2: rgba(91, 33, 182, 0.18);
+  --text: #1e1b2e;
+  --text2: #5c5768;
+  --text3: #8b8499;
+  --accent: #7c3aed;
+  --accent-soft: #a78bfa;
+  --accent2: #6d28d9;
+  --flag: #e11d48;
+  --flag-bg: rgba(225, 29, 72, 0.1);
+  --flag-under: rgba(225, 29, 72, 0.45);
+  --green: #059669;
+  --green-soft: #d1fae5;
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-pill: 999px;
+}
+body.theme-night {
+  --page-bg1: #1e1b4b;
+  --page-bg2: #312e81;
+  --shell-bg: #252047;
+  --shell-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.45);
+  --sidebar-start: #4c1d95;
+  --sidebar-end: #3730a3;
+  --sidebar-highlight: rgba(255,255,255,0.08);
+  --main-fill: #2d2850;
+  --card-tint: #363052;
+  --border: rgba(167, 139, 250, 0.15);
+  --border2: rgba(167, 139, 250, 0.28);
+  --text: #f5f3ff;
+  --text2: #c4b5fd;
+  --text3: #948ab8;
+  --accent: #a78bfa;
+  --accent-soft: #c4b5fd;
+  --accent2: #ddd6fe;
+  --flag: #fb7185;
+  --flag-bg: rgba(251, 113, 133, 0.15);
+  --flag-under: rgba(251, 113, 133, 0.5);
+  --green: #34d399;
+  --green-soft: rgba(52, 211, 153, 0.15);
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: linear-gradient(145deg, var(--page-bg1) 0%, var(--page-bg2) 55%, #ede9fe 100%);
+  color: var(--text);
+  font-family: 'Nunito', system-ui, sans-serif;
+  min-height: 100vh;
+  padding: clamp(12px, 3vw, 28px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  transition: background 0.35s, color 0.35s;
 }
 
-/* ── LIGHT MODE (student-portal style: lavender base, violet accents, soft depth) ── */
-[data-theme="light"]{
-  --bg:#f3f0ff;
-  --s1:#ffffff;
-  --s2:#faf8ff;
-  --s3:#f4efff;
-  --s4:#ebe4ff;
-  --bd:#e4dbf7;
-  --bd2:#cfc2eb;
-  --gold:#8b5cf6;
-  --gold-d:#6d28d9;
-  --gold-bg:rgba(139,92,246,0.09);
-  --teal:#0d9488;
-  --teal-d:#0f766e;
-  --red:#dc2626;
-  --tx:#1a1628;
-  --tx2:#534e67;
-  --tx3:#7c758f;
-  --c0:#8b5cf6;
-  --c1:#a855f7;
-  --c2:#c084fc;
-  --pick:#7c3aed;
-  --pick-d:#6d28d9;
-  --pick-bg:rgba(124,58,237,0.11);
-  --chip-off-bg:#f6f2ff;
-  --chip-off-bd:#e4dbf7;
-  --chip-off-tx:#6b647e;
-  --r:16px;
-  --gen-bg:linear-gradient(165deg,#9f75fc 0%,#834af7 48%,#7239ea 100%);
-  --gen-fg:#ffffff;
-  --shadow-soft:0 2px 14px rgba(91,33,182,0.07);
-  --shadow-card:0 6px 28px rgba(91,33,182,0.09);
+#app-shell {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  min-height: min(92vh, 920px);
+  background: var(--shell-bg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shell-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: background 0.35s, box-shadow 0.35s;
 }
 
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;overflow:hidden;}
-body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;font-size:21px;line-height:1.5;}
-[data-theme="light"] body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+#app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: row;
+}
 
-/* ── TOP BAR (collapsible shell) ── */
-#topbar-shell{
-  flex-shrink:0;z-index:20;display:flex;flex-direction:column;
+@media (max-width: 880px) {
+  #app-body { flex-direction: column; }
+  #sidebar { order: 2; width: 100% !important; max-height: min(42vh, 320px); border-radius: 0 0 var(--radius-xl) var(--radius-xl) !important; }
+  #main-column { order: 1; }
 }
-#topbar-panel{
-  display:grid;
-  grid-template-rows:1fr;
-  transition:grid-template-rows .42s cubic-bezier(.4,0,.2,1);
-}
-#topbar-shell.collapsed #topbar-panel{grid-template-rows:0fr;}
-.topbar-panel-inner{
-  overflow:hidden;
-  min-height:0;
-}
-#topbar{
-  background:var(--s1);
-  padding:9px 18px 10px;
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-}
-#topbar-handle{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:12px;
-  padding:6px 14px;
-  background:var(--s1);
-  border-top:1px solid var(--bd);
-  border-bottom:1px solid var(--bd);
-}
-.topbar-handle-lbl{
-  font-family:'DM Mono',monospace;font-size:11px;color:var(--tx3);
-  text-transform:uppercase;letter-spacing:.09em;
-}
-.topbar-handle-actions{display:flex;align-items:center;gap:10px;}
-.btn-theme{
-  display:inline-flex;align-items:center;gap:7px;
-  background:var(--s2);border:1px solid var(--bd);color:var(--tx2);
-  font-family:'DM Mono',monospace;font-size:12px;font-weight:500;
-  padding:6px 13px;border-radius:999px;cursor:pointer;
-  transition:background .15s,border-color .15s,color .15s,box-shadow .15s;
-}
-.btn-theme:hover{background:var(--s3);border-color:var(--bd2);color:var(--tx);}
-[data-theme="light"] .btn-theme{
-  background:#fff;
-  box-shadow:var(--shadow-soft);
-}
-[data-theme="light"] .btn-theme:hover{
-  border-color:#c4b5fd;
-  color:var(--pick);
-}
-.btn-theme .th-ico{font-size:14px;line-height:1;}
-#btn-topbar-toggle{
-  display:inline-flex;align-items:center;gap:8px;
-  background:transparent;border:1px solid var(--bd);color:var(--tx2);
-  font-family:'DM Mono',monospace;font-size:12px;
-  padding:5px 14px;border-radius:8px;cursor:pointer;
-  transition:background .15s,border-color .15s,color .15s;
-}
-#btn-topbar-toggle:hover{background:var(--s2);border-color:var(--bd2);color:var(--tx);}
-#btn-topbar-toggle .tbb-chevron{font-size:11px;line-height:1;opacity:.85;}
-#topbar-shell.collapsed #topbar-handle{border-top:none;}
-.lbl{font-family:'DM Mono',monospace;font-size:13px;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:4px;}
-.tb-g{display:flex;flex-direction:column;}
-.vdiv{width:1px;height:46px;background:var(--bd);flex-shrink:0;opacity:.85;}
-input[type=password]{
-  background:var(--s2);border:1px solid var(--bd);color:var(--tx);
-  font-family:'DM Mono',monospace;font-size:15px;padding:8px 12px;
-  border-radius:9px;outline:none;width:315px;transition:border-color .15s;
-}
-input[type=password]:focus{border-color:var(--gold-d);}
-.api-ok{font-family:'DM Mono',monospace;font-size:14px;color:var(--teal);}
-.api-no{font-family:'DM Mono',monospace;font-size:14px;color:var(--red);}
-.fz-row{display:flex;align-items:center;gap:6px;}
-.fz-btn{
-  background:var(--s2);border:1px solid var(--bd);color:var(--tx2);
-  width:33px;height:33px;border-radius:8px;cursor:pointer;
-  font-size:20px;display:flex;align-items:center;justify-content:center;
-  transition:all .12s;font-family:'DM Mono',monospace;flex-shrink:0;
-}
-.fz-btn:hover{background:var(--s3);color:var(--tx);border-color:var(--bd2);}
-.fz-val{font-family:'DM Mono',monospace;font-size:15px;color:var(--tx2);min-width:39px;text-align:center;}
-.fz-reset{width:auto!important;padding:0 11px;font-size:14px!important;}
-#btn-gen{
-  background:var(--gen-bg);color:var(--gen-fg);border:none;
-  font-family:'Syne',sans-serif;font-weight:700;font-size:17px;
-  padding:12px 27px;border-radius:14px;cursor:pointer;
-  letter-spacing:.05em;text-transform:uppercase;
-  transition:background .15s,filter .15s,transform .12s,box-shadow .15s;flex-shrink:0;
-}
-[data-theme="dark"] #btn-gen:hover{background:#f5c842;color:#0b0d12;transform:translateY(-1px);}
-[data-theme="light"] #btn-gen{
-  box-shadow:0 4px 18px rgba(114,57,234,0.32);
-}
-[data-theme="light"] #btn-gen:hover{
-  filter:brightness(1.06);
-  transform:translateY(-1px);
-  box-shadow:0 6px 22px rgba(114,57,234,0.38);
-}
-#btn-gen:active{transform:none;}
-#btn-gen:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:none;}
 
-/* ── GLOBAL QUICK BAR (right of Generate All) ── */
-.global-tools{
-  flex:1;display:flex;flex-wrap:wrap;align-items:flex-end;gap:9px 11px;
-  min-width:0;margin-left:2px;padding:8px 11px 9px;
-  background:rgba(0,0,0,.18);border:1px solid var(--bd);border-radius:12px;
+/* SIDEBAR — purple rail */
+#sidebar {
+  width: 248px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, var(--sidebar-start) 0%, var(--sidebar-end) 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 20px 14px 16px;
+  border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.06);
 }
-[data-theme="light"] .global-tools{
-  background:#ffffff;
-  box-shadow:var(--shadow-soft);
+#sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  margin-bottom: 12px;
 }
-.gb-group{display:flex;flex-direction:column;gap:2px;}
-.gb-group .lbl{margin-bottom:0;font-size:10px;letter-spacing:.09em;color:var(--tx3);}
-.gb-types,.gb-modes,.gb-ex{display:flex;flex-wrap:wrap;gap:4px;}
-.gb-types .mode-chip{font-size:12px;padding:3px 9px;}
-.gb-stage-wrap{display:flex;flex-direction:column;gap:2px;}
-.gb-stage-wrap select.dr-select{font-size:12px;padding:5px 8px;max-width:148px;}
-.gb-t-wrap{display:flex;flex-direction:column;gap:2px;max-width:min(100%,360px);}
-.gb-t-row{display:flex;flex-wrap:wrap;gap:2px;}
-.gb-ten{
-  font-family:'DM Mono',monospace;font-size:10px;font-weight:500;
-  padding:3px 6px;border-radius:6px;border:1px solid var(--chip-off-bd);
-  background:var(--chip-off-bg);color:var(--chip-off-tx);cursor:pointer;
-  transition:all .12s;user-select:none;line-height:1;
+#sidebar-brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
-.gb-ten:hover{border-color:var(--bd2);color:var(--tx2);}
-.gb-ten.on{background:var(--pick-bg);border-color:var(--pick-d);color:var(--pick);}
-.gb-topic{
-  background:var(--s2);border:1px solid var(--bd);color:var(--tx);
-  font-family:'DM Mono',monospace;font-size:12px;padding:5px 9px;
-  border-radius:7px;outline:none;width:min(188px,26vw);transition:border-color .15s;
+#sidebar-brand-text {
+  font-weight: 800;
+  font-size: 17px;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
-.gb-topic:focus{border-color:var(--gold-d);}
-.gb-topic.gb-topic-on{background:var(--pick-bg);border-color:var(--pick-d);color:var(--pick);}
+#sidebar-brand-sub {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.72);
+  margin-top: 2px;
+}
+#sidebar-head {
+  padding: 4px 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 8px;
+}
+#sidebar-head-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+#sidebar-head-issue-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+#sidebar-head-issue-title.is-placeholder {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 0;
+}
+#sidebar-head-issue-msg {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.82);
+  line-height: 1.45;
+  display: none;
+}
+#sidebar-head-issue-msg.visible {
+  display: block;
+}
+#issue-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 4px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.25) transparent;
+}
+#issue-list::-webkit-scrollbar { width: 6px; }
+#issue-list::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.28);
+  border-radius: var(--radius-pill);
+}
+.issue-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.88);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid transparent;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  cursor: pointer;
+}
+.issue-toggle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 6px;
+  margin: 0 2px 0 -2px;
+  padding: 2px;
+}
+.issue-toggle:focus-within { outline: 2px solid rgba(255,255,255,0.45); outline-offset: 1px; }
+.issue-scan-cb {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: #fecaca;
+}
+body.theme-night .issue-scan-cb { accent-color: #a78bfa; }
+.issue-item:hover { background: rgba(255,255,255,0.1); }
+.issue-item.active {
+  background: rgba(254, 226, 226, 0.22);
+  border-color: rgba(254, 202, 202, 0.45);
+  color: #fff;
+}
+.issue-name { flex: 1; line-height: 1.35; padding-right: 8px; }
+.issue-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fecaca;
+  min-width: 22px;
+  text-align: right;
+}
+.issue-item.active .issue-count { color: #fff; }
+.issue-item.issue-selected {
+  background: rgba(255,255,255,0.32) !important;
+  border-color: rgba(255,255,255,0.65) !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.45), 0 4px 14px rgba(0,0,0,0.12);
+  color: #fff;
+}
+.issue-item.issue-selected .issue-count {
+  color: #fff;
+  font-weight: 800;
+}
+.issue-item:has(.issue-scan-cb:not(:checked)) {
+  opacity: 0.78;
+}
+.coach-flag {
+  cursor: pointer;
+  border-radius: 3px;
+  touch-action: manipulation;
+}
+#sidebar-foot {
+  padding: 14px 10px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.55;
+}
 
-/* ── MAIN COLS WRAPPER ── */
-#main{flex:1;display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;min-height:0;}
+/* MAIN COLUMN */
+#main-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--main-fill);
+}
 
-/* ── COLUMN — each band gets a soft tint from --ca (purple / teal / gold) ── */
-.col:nth-child(1){--ca:var(--c0);}
-.col:nth-child(2){--ca:var(--c1);}
-.col:nth-child(3){--ca:var(--c2);}
-.col{
-  display:flex;flex-direction:column;
-  border-right:1px solid var(--bd);overflow:hidden;position:relative;
-  background:color-mix(in srgb,var(--ca) 7%,var(--bg));
+/* HEADER */
+#header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 22px 14px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
 }
-.col:last-child{border-right:none;}
+#alert-wrap {
+  flex: 1;
+  min-width: 180px;
+}
+#alert-bar {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  min-height: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 18px;
+  background: #fff;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(91, 33, 182, 0.06);
+  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+#alert-simple {
+  line-height: 1.35;
+}
+#alert-bar:not(.alert-mode-issue) #alert-simple {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#alert-structured { width: 100%; }
+#alert-top-title {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--flag);
+  line-height: 1.2;
+}
+#alert-top-tip {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.45;
+}
+body.theme-night #alert-bar {
+  background: var(--card-tint);
+}
+body.theme-night #alert-top-tip {
+  color: var(--text);
+}
+#alert-bar.flagged:not(.alert-mode-issue) {
+  color: var(--flag);
+  border-color: rgba(225, 29, 72, 0.35);
+  font-weight: 700;
+}
+#alert-bar.flagged.alert-mode-issue {
+  border-color: rgba(225, 29, 72, 0.35);
+}
+#alert-bar.clear {
+  color: var(--green);
+  border-color: rgba(5, 150, 105, 0.35);
+}
+#header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.hbtn {
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--accent);
+  background: #fff;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.12s;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.15);
+}
+body.theme-night .hbtn {
+  background: var(--card-tint);
+}
+.hbtn:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-1px);
+}
+#theme-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#header-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.hbtn-compact {
+  padding: 6px 10px;
+  font-size: 11px;
+}
+#draft-status {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  white-space: nowrap;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#draft-status.status-saving { color: var(--accent); }
+#draft-status.status-saved { color: var(--green); }
+#draft-status.status-copy { color: var(--accent); }
+#draft-status.status-warn { color: var(--amber, #d97706); }
+#btn-undo-clear:not([hidden]) { font-size: 11px; padding: 8px 12px; }
 
-/* Centre column: deeper wash so it reads as the focal band */
-.col:nth-child(2){
-  background:color-mix(in srgb,var(--ca) 13%,var(--bg));
+/* STATS */
+#stats-bar {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 6px 22px 18px;
+  flex-shrink: 0;
 }
-.col:nth-child(2) .col-strip{
-  background:color-mix(in srgb,var(--ca) 20%,var(--s1));
-  box-shadow:inset 0 -2px 0 color-mix(in srgb,var(--ca) 38%,transparent);
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--card-tint);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text3);
 }
-.col:nth-child(2) .col-drawer{background:color-mix(in srgb,var(--ca) 15%,var(--s2));}
-.col:nth-child(2) .ex-brief,
-.col:nth-child(2) .ex-create-col{
-  background:color-mix(in srgb,var(--ca) 12%,var(--s2));
-  border-color:color-mix(in srgb,var(--ca) 24%,var(--bd));
+.stat-pill.highlight {
+  border-color: rgba(124, 58, 237, 0.35);
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.08);
 }
-.col:nth-child(2) .ex-hint{
-  background:color-mix(in srgb,var(--ca) 10%,var(--s3));
-  border-color:color-mix(in srgb,var(--ca) 18%,var(--bd));
+body.theme-night .stat-pill.highlight {
+  background: var(--shell-bg);
 }
-.col:nth-child(2) .teacher-panel{background:color-mix(in srgb,var(--ca) 19%,var(--s1));}
-.col:nth-child(2) .teacher-header:hover{background:color-mix(in srgb,var(--ca) 14%,var(--s2));}
-.col:nth-child(2) .teacher-ta{background:color-mix(in srgb,var(--ca) 13%,var(--s2));}
+.stat-val {
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.goal-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.goal-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 2px solid var(--accent);
+  background: #fff;
+  color: var(--accent);
+  font-size: 20px;
+  font-weight: 800;
+  font-family: inherit;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+  flex-shrink: 0;
+}
+.goal-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+.goal-btn:active { transform: scale(0.96); }
+body.theme-night .goal-btn {
+  background: var(--card-tint);
+}
+body.theme-night .goal-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+#target-display {
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 36px;
+  text-align: center;
+}
+#progress-wrap {
+  width: 120px;
+  height: 10px;
+  background: rgba(124, 58, 237, 0.12);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+#progress-bar {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+  width: 0%;
+  transition: width 0.35s ease, background 0.3s;
+}
 
-/* col top strip — subtle band tint; column colour mainly via dot */
-.col-strip{
-  background:color-mix(in srgb,var(--ca) 13%,var(--s1));
-  border-bottom:1px solid var(--bd);
-  box-shadow:inset 0 -2px 0 color-mix(in srgb,var(--ca) 24%,transparent);
-  padding:8px 14px;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;gap:10px;z-index:10;
+#heat-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 200px;
+  max-width: 380px;
+  padding: 12px 16px;
+  background: var(--card-tint);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
 }
-.col-strip-left{display:flex;align-items:center;gap:9px;min-width:0;flex:1;}
-.col-dot{width:8px;height:8px;border-radius:50%;background:var(--ca);flex-shrink:0;opacity:.92;}
-.col-summary{
-  font-family:'DM Mono',monospace;font-size:13px;color:var(--tx2);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+#heat-track-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-.col-strip-fz{
-  display:flex;align-items:center;flex-shrink:0;padding:0 2px;gap:7px;
+#heat-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
-.col-strip-fz-lbl{
-  font-family:'DM Mono',monospace;font-size:10px;color:var(--tx3);
-  text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;
+#heat-track {
+  position: relative;
+  flex: 1;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(to right, #34d399, #a3e635, #fbbf24, #fb923c, #f43f5e);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.12);
 }
-.col-strip-fz .strip-fz-row{gap:4px;}
-.col-strip-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.icon-btn{
-  background:transparent;border:1px solid var(--bd);color:var(--tx2);
-  width:36px;height:36px;border-radius:8px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;transition:all .12s;flex-shrink:0;
+#heat-slider {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  left: 0%;
+  transition: left 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
 }
-.icon-btn:hover{background:var(--s3);color:var(--tx);border-color:var(--bd2);}
-.icon-btn.active{background:var(--pick-bg);border-color:var(--pick-d);color:var(--pick);}
-.btn-regen{
-  background:var(--s2);border:1px solid var(--bd);color:var(--tx2);
-  font-family:'DM Mono',monospace;font-size:14px;padding:5px 12px;
-  border-radius:8px;cursor:pointer;transition:all .12s;white-space:nowrap;
+#heat-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
 }
-.btn-regen:hover{background:var(--s3);color:var(--tx);}
-.btn-regen:disabled{opacity:.4;cursor:not-allowed;}
+#heat-labels span {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+#heat-labels span:nth-child(2) { text-align: center; }
+#heat-labels span:nth-child(3) { text-align: right; }
 
-/* ── DRAWER ── */
-.col-drawer{
-  background:color-mix(in srgb,var(--ca) 9%,var(--s2));
-  border-bottom:1px solid var(--bd);
-  overflow:hidden;
-  max-height:0;
-  transition:max-height .3s cubic-bezier(.4,0,.2,1);
-  flex-shrink:0;
-  z-index:9;
+/* MAIN EDITOR */
+#main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 22px 22px;
 }
-.col-drawer.open{max-height:630px;}
-.drawer-inner{padding:15px 18px;display:flex;flex-direction:column;gap:15px;}
+#editor-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 28px rgba(91, 33, 182, 0.07);
+  overflow: hidden;
+}
+body.theme-night #editor-card {
+  background: var(--shell-bg);
+}
+#editor-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(20px, 4vw, 36px) clamp(18px, 4vw, 40px);
+  overflow-y: auto;
+  min-height: 280px;
+}
+#editor {
+  flex: 1;
+  min-height: 320px;
+  font-family: 'Nunito', Georgia, serif;
+  font-size: clamp(17px, 2.5vw, 19px);
+  font-weight: 500;
+  line-height: 1.85;
+  color: var(--text);
+  outline: none;
+  caret-color: var(--accent);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+#editor:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text3);
+  pointer-events: none;
+  font-style: italic;
+  font-weight: 600;
+}
 
-.dr-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;}
-.dr-field{display:flex;flex-direction:column;gap:5px;}
-.dr-input{
-  background:var(--s3);border:1px solid var(--chip-off-bd);color:var(--tx2);
-  font-family:'DM Mono',monospace;font-size:15px;padding:8px 11px;
-  border-radius:9px;outline:none;transition:border-color .15s,color .15s;
+/* Bottom sheet: issue explainers from sidebar (block layout avoids empty flex “stretch” under short tips) */
+#issue-explainer {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  width: auto;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: min(48vh, 360px);
+  background: var(--shell-bg);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: 0 -12px 40px rgba(91, 33, 182, 0.18);
+  z-index: 60;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
 }
-.dr-input:focus{border-color:var(--pick);color:var(--tx);}
-.dr-input.dr-input-on{
-  background:var(--pick-bg);border:1px solid var(--pick-d);color:var(--pick);
+#issue-explainer.visible {
+  transform: translateY(0);
+  pointer-events: auto;
 }
-.dr-input.dr-input-on:focus{color:var(--pick);border-color:var(--pick-d);}
-.dr-input{width:225px;}
-select.dr-select{
-  background:var(--pick-bg);border:1px solid var(--pick-d);color:var(--pick);
-  font-family:'DM Mono',monospace;font-size:15px;padding:8px 11px;
-  border-radius:9px;outline:none;transition:border-color .15s,color .15s,background .15s,filter .12s;
-  cursor:pointer;
+#issue-explainer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
-select.dr-select:focus,select.dr-select:hover{
-  filter:brightness(1.08);
+#issue-explainer-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  padding-right: 8px;
 }
-.dr-input::placeholder{color:var(--tx3);}
+#issue-explainer-close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 2px solid var(--border2);
+  background: var(--card-tint);
+  color: var(--text2);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+#issue-explainer-close:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+#issue-explainer-body {
+  padding: 12px 16px 18px;
+  max-height: min(36vh, 260px);
+  overflow-y: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.55;
+  -webkit-overflow-scrolling: touch;
+}
+#issue-explainer-body p {
+  margin: 0 0 10px;
+}
+#issue-explainer-body p:last-child {
+  margin-bottom: 0;
+}
+#issue-explainer-body .issue-explainer-example {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--card-tint);
+  border-left: 4px solid var(--accent-soft);
+  font-size: 12px;
+  color: var(--text2);
+}
 
-/* tenet chips in drawer */
-.tenet-grid{display:flex;flex-direction:column;gap:6px;}
-.tenet-chip{
-  font-family:'DM Sans',sans-serif;font-size:15px;
-  padding:6px 14px;border-radius:9px;
-  border:1px solid var(--chip-off-bd);background:var(--chip-off-bg);
-  color:var(--chip-off-tx);cursor:pointer;transition:all .12s;
-  user-select:none;text-align:left;
+/* FLAGGED TEXT */
+.f-opener { color: var(--flag); font-weight: 800; }
+.f-verb, .f-basic, .f-adverb, .f-filter, .f-adj, .f-abstract, .f-stopword { color: var(--flag); font-weight: 700; }
+.f-repeat {
+  color: var(--flag);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--flag-under);
+  text-decoration-style: wavy;
+  text-underline-offset: 3px;
 }
-.tenet-chip:hover:not(.disabled){border-color:var(--bd2);color:var(--tx2);}
-.tenet-chip.on{background:var(--pick-bg);border-color:var(--pick-d);color:var(--pick);}
-.tenet-chip.disabled{opacity:.35;cursor:not-allowed;}
-.tenet-note{font-family:'DM Mono',monospace;font-size:14px;color:var(--tx3);}
 
-/* mode chips in drawer */
-.mode-chip{
-  font-family:'DM Mono',monospace;font-size:14px;
-  padding:5px 12px;border-radius:30px;
-  border:1px solid var(--chip-off-bd);background:var(--chip-off-bg);
-  color:var(--chip-off-tx);cursor:pointer;transition:all .12s;user-select:none;
+/* POPOVER */
+#popover {
+  position: fixed;
+  z-index: 999;
+  background: var(--shell-bg);
+  border: 2px solid var(--flag);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  max-width: 280px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.5;
+  box-shadow: 0 16px 40px rgba(91, 33, 182, 0.22);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+  transition: opacity 0.18s, transform 0.18s;
 }
-.mode-chip:hover{border-color:var(--bd2);color:var(--tx2);}
-.mode-chip.on{background:var(--pick-bg);border-color:var(--pick-d);color:var(--pick);}
-
-.dr-gen-btn{
-  background:var(--ca);color:#0b0d12;border:none;
-  font-family:'Syne',sans-serif;font-weight:700;font-size:15px;
-  padding:9px 21px;border-radius:9px;cursor:pointer;
-  letter-spacing:.04em;text-transform:uppercase;transition:all .12s;align-self:flex-start;
+#popover.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
-.dr-gen-btn:hover{filter:brightness(1.1);}
-
-/* ── EXERCISE BODY ── */
-.col-body{
-  flex:1;overflow-y:auto;padding:16px 16px;
-  display:flex;flex-direction:column;gap:12px;min-height:0;
+#popover strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--flag);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
 }
-.col-body::-webkit-scrollbar{width:5px;}
-.col-body::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px;}
-
-.ex-brief{
-  background:color-mix(in srgb,var(--ca) 8%,var(--s2));
-  border:1px solid color-mix(in srgb,var(--ca) 18%,var(--bd));
-  border-radius:var(--r);
-  padding:14px 16px 16px;
+#popover::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: var(--flag);
 }
-.ex-brief-text{
-  font-family:'DM Sans',sans-serif;
-  font-size:18px;
-  color:var(--tx);line-height:1.5;font-weight:400;
-}
-.ex-create-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px 12px;
-  align-items:start;
-}
-@media (max-width:1100px){
-  .ex-create-grid{grid-template-columns:1fr;}
-}
-.ex-create-col{
-  background:color-mix(in srgb,var(--ca) 8%,var(--s2));
-  border:1px solid color-mix(in srgb,var(--ca) 18%,var(--bd));
-  border-radius:var(--r);
-  padding:13px 15px;min-width:0;
-}
-.ex-create-col-h{
-  font-family:'DM Mono',monospace;font-size:11px;color:var(--tx3);
-  text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px;
-}
-.ex-create-ul{margin:0;padding-left:20px;}
-.ex-create-ul li{
-  font-family:'DM Sans',sans-serif;
-  font-size:calc(var(--col-fz,18px) * 0.88);
-  color:var(--tx);line-height:1.55;margin-bottom:6px;
-}
-.ex-create-ul li:last-child{margin-bottom:0;}
-.ex-hint{
-  background:color-mix(in srgb,var(--ca) 6%,var(--s3));
-  border:1px solid color-mix(in srgb,var(--ca) 12%,var(--bd));
-  border-radius:var(--r);
-  padding:11px 15px;font-family:'DM Mono',monospace;
-  font-size:calc(var(--col-fz,18px) * 0.7);
-  color:var(--tx3);line-height:1.55;
-}
-.ex-hint::before{content:'💡 ';opacity:.65;}
-[data-theme="light"] .ex-brief,
-[data-theme="light"] .ex-create-col{
-  box-shadow:var(--shadow-card);
-}
-[data-theme="light"] .ex-hint{
-  box-shadow:var(--shadow-soft);
-}
-[data-theme="light"] .dr-gen-btn{
-  color:#fff;
-  box-shadow:0 2px 10px rgba(124,58,237,0.22);
-}
-[data-theme="light"] .col-body::-webkit-scrollbar-thumb{background:#cfc2eb;}
-
-/* loading/empty */
-.col-loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
-.spinner{width:39px;height:39px;border:3px solid var(--bd2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.loading-txt{font-family:'DM Mono',monospace;font-size:15px;color:var(--tx3);animation:pulse 1.4s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
-.col-empty{flex:1;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:15px;color:var(--tx3);}
-.col-error{margin:15px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2);border-radius:var(--r);padding:14px 17px;font-family:'DM Mono',monospace;font-size:15px;color:var(--red);line-height:1.5;}
-[data-theme="light"] .col-error{background:rgba(220,38,38,.06);border-color:rgba(220,38,38,.18);}
-
-/* ── TEACHER PANEL ── */
-.teacher-panel{
-  border-top:1px solid var(--bd);
-  background:color-mix(in srgb,var(--ca) 11%,var(--s1));
-  flex-shrink:0;
-  display:flex;
-  flex-direction:column;
-}
-.teacher-header{
-  padding:8px 15px;display:flex;align-items:center;justify-content:space-between;
-  cursor:pointer;user-select:none;
-}
-.teacher-header:hover{background:color-mix(in srgb,var(--ca) 10%,var(--s2));}
-.teacher-lbl{font-family:'DM Mono',monospace;font-size:14px;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;}
-.teacher-fz{display:flex;align-items:center;gap:5px;}
-.teacher-body{
-  overflow:hidden;max-height:0;transition:max-height .25s ease;
-}
-.teacher-body.open{max-height:330px;}
-.teacher-panel.teacher-para .teacher-body.open{max-height:412px;}
-.teacher-ta{
-  width:100%;
-  background:color-mix(in srgb,var(--ca) 8%,var(--s2));
-  border:none;border-top:1px solid var(--bd);
-  color:var(--tx);font-family:'DM Sans',sans-serif;
-  font-size:var(--teacher-fz,21px);
-  padding:15px 17px;resize:none;outline:none;
-  line-height:1.6;min-height:150px;
-}
-.teacher-panel.teacher-para .teacher-ta{min-height:188px;}
-.teacher-ta::placeholder{color:var(--tx3);}
-
-/* ── LIGHT: calmer “product” UI — less monospace / terminal density ── */
-[data-theme="light"] body{font-size:16px;}
-[data-theme="light"] #topbar{padding:14px 22px 15px;gap:16px;}
-[data-theme="light"] #topbar-handle{padding:8px 18px;}
-[data-theme="light"] .vdiv{opacity:.4;height:42px;}
-[data-theme="light"] .lbl,
-[data-theme="light"] .gb-group .lbl{
-  font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;
-  letter-spacing:.02em;text-transform:none;color:var(--tx2);margin-bottom:6px;
-}
-[data-theme="light"] .topbar-handle-lbl{
-  font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;
-  letter-spacing:.02em;text-transform:none;
-}
-[data-theme="light"] .btn-theme,
-[data-theme="light"] #btn-topbar-toggle{
-  font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;border-radius:999px;
-}
-[data-theme="light"] input[type=password],
-[data-theme="light"] .dr-input,
-[data-theme="light"] select.dr-select,
-[data-theme="light"] .gb-topic{
-  font-family:'DM Sans',sans-serif;font-size:14px;border-radius:12px;
-}
-[data-theme="light"] .api-ok,[data-theme="light"] .api-no{font-family:'DM Sans',sans-serif;font-weight:500;}
-[data-theme="light"] .fz-btn,[data-theme="light"] .fz-val{font-family:'DM Sans',sans-serif;font-weight:600;}
-[data-theme="light"] .fz-reset{font-family:'DM Sans',sans-serif!important;font-weight:600!important;}
-[data-theme="light"] .global-tools{
-  padding:14px 18px 17px;gap:14px 20px;border:none;border-radius:18px;
-}
-[data-theme="light"] .mode-chip{
-  font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;
-  padding:7px 14px;border-radius:999px;
-}
-[data-theme="light"] .gb-types .mode-chip{font-size:12px;padding:6px 12px;}
-[data-theme="light"] .gb-ten{
-  font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;padding:5px 8px;border-radius:8px;
-}
-[data-theme="light"] .col-summary{
-  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;letter-spacing:.01em;
-}
-[data-theme="light"] .col-strip-fz-lbl{
-  font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;
-  text-transform:none;letter-spacing:.02em;
-}
-[data-theme="light"] .col-strip{padding:12px 18px;}
-[data-theme="light"] .btn-regen{font-family:'DM Sans',sans-serif;font-weight:600;border-radius:10px;padding:6px 14px;}
-[data-theme="light"] .drawer-inner{padding:20px 22px;gap:18px;}
-[data-theme="light"] .tenet-note{font-family:'DM Sans',sans-serif;font-size:13px;}
-[data-theme="light"] .tenet-chip{font-size:14px;padding:10px 16px;border-radius:12px;}
-[data-theme="light"] .dr-gen-btn{border-radius:12px;padding:11px 24px;}
-[data-theme="light"] .col-body{padding:20px 18px;gap:16px;}
-[data-theme="light"] .ex-brief,[data-theme="light"] .ex-create-col{border-radius:18px;}
-[data-theme="light"] .ex-create-col-h{
-  font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;
-  text-transform:none;letter-spacing:.06em;
-}
-[data-theme="light"] .ex-hint{font-family:'DM Sans',sans-serif;font-weight:400;border-radius:14px;}
-[data-theme="light"] .teacher-lbl{
-  font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;
-  text-transform:none;letter-spacing:.04em;color:var(--tx2);
-}
-[data-theme="light"] .teacher-header{padding:12px 18px;}
-[data-theme="light"] .loading-txt,[data-theme="light"] .col-empty,[data-theme="light"] .col-error{font-family:'DM Sans',sans-serif;}
-[data-theme="light"] .col{border-right-color:rgba(139,92,246,.12);}
-[data-theme="light"] .icon-btn{border-radius:11px;}
-[data-theme="light"] #btn-gen{font-size:16px;padding:13px 26px;border-radius:16px;letter-spacing:.03em;}
-
-/* Named presets (saved setups) */
-.preset-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:min(420px,94vw);}
-.preset-select{min-width:200px;max-width:min(280px,85vw);flex:1;}
-.preset-del-btn{min-width:36px;padding-left:10px!important;padding-right:10px!important;font-weight:600;}
+.f-stopsent { background: var(--flag-bg); border-radius: 4px; padding: 0 2px; }
 </style>
 </head>
 <body>
-<div style="display:flex;flex-direction:column;height:100vh;">
 
-<!-- TOP BAR -->
-<div id="topbar-shell">
-  <div id="topbar-panel">
-    <div class="topbar-panel-inner">
-<div id="topbar">
-  <div class="tb-g">
-    <span class="lbl">API Key</span>
-    <div style="display:flex;align-items:center;gap:9px;">
-      <input type="password" id="api-key" placeholder="sk-ant-api03-..." autocomplete="off">
-      <span id="api-st" class="api-no">not set</span>
-    </div>
-  </div>
-  <div class="vdiv"></div>
-  <div class="tb-g">
-    <span class="lbl">Teacher font (all)</span>
-    <div class="fz-row">
-      <button class="fz-btn" id="gfz-dn">−</button>
-      <span class="fz-val" id="gfz-val">21</span>
-      <button class="fz-btn" id="gfz-up">+</button>
-      <button class="fz-btn fz-reset" id="gfz-reset">reset</button>
-    </div>
-  </div>
-  <div class="vdiv"></div>
-  <button id="btn-gen">⚡ Generate All</button>
-  <div class="global-tools" id="global-tools">
-    <div class="gb-group gb-presets-wrap">
-      <span class="lbl">Saved setups</span>
-      <div class="preset-row">
-        <select id="preset-select" class="dr-select preset-select" aria-label="Load a saved setup">
-          <option value="">— Load a saved setup —</option>
-        </select>
-        <button type="button" class="btn-regen" id="preset-save" title="Save all current controls as a named setup">Save current</button>
-        <button type="button" class="btn-regen preset-del-btn" id="preset-delete" disabled title="Delete selected setup">✕</button>
-      </div>
-    </div>
-    <div class="gb-group">
-      <span class="lbl">Writing type</span>
-      <div class="gb-types" role="group" aria-label="Writing type">
-        <span class="mode-chip gb-type" data-gb-type="narrative" tabindex="0">Narrative</span>
-        <span class="mode-chip gb-type" data-gb-type="persuasive" tabindex="0">Persuasive</span>
-        <span class="mode-chip gb-type" data-gb-type="analytical" tabindex="0">Analytical</span>
-      </div>
-    </div>
-    <div class="gb-group gb-stage-wrap" id="gb-stage-wrap">
-      <span class="lbl">Narrative stage</span>
-      <select id="gb-stage" class="dr-select" aria-label="Narrative story stage">
-        <option value="who">WHO</option>
-        <option value="where">WHERE</option>
-        <option value="what">WHAT</option>
-        <option value="tension">TENSION</option>
-        <option value="complication">COMPLICATION</option>
-        <option value="climax">CLIMAX</option>
-        <option value="resolution">RESOLUTION</option>
-        <option value="flashback">FLASHBACK</option>
-      </select>
-    </div>
-    <div class="gb-group gb-t-wrap">
-      <span class="lbl">Tenets</span>
-      <div class="gb-t-row" id="gb-t-row" aria-label="Tenet presets"></div>
-    </div>
-    <div class="gb-group">
-      <span class="lbl">Mode</span>
-      <div class="gb-modes" role="group" aria-label="Mode">
-        <span class="mode-chip" data-gb-mode="sentence" tabindex="0">Sentence</span>
-        <span class="mode-chip" data-gb-mode="paragraph" tabindex="0">Paragraph</span>
-      </div>
-    </div>
-    <div class="gb-group">
-      <span class="lbl">Exercise type</span>
-      <div class="gb-ex" role="group" aria-label="Exercise type">
-        <span class="mode-chip" data-gb-ex="upgrade" tabindex="0">Upgrade</span>
-        <span class="mode-chip" data-gb-ex="create" tabindex="0">Create</span>
-      </div>
-    </div>
-    <div class="gb-group">
-      <span class="lbl">Topic / theme</span>
-      <input type="text" id="gb-topic" class="gb-topic" placeholder="storm, heist, film title…" autocomplete="off">
-    </div>
-  </div>
-</div>
-    </div>
-  </div>
-  <div id="topbar-handle">
-    <span class="topbar-handle-lbl">Appearance</span>
-    <div class="topbar-handle-actions">
-      <button type="button" class="btn-theme" id="btn-theme" aria-pressed="false" title="Switch theme">
-        <span class="th-ico" aria-hidden="true">☀️</span><span class="th-txt">Light</span>
-      </button>
-      <button type="button" id="btn-topbar-toggle" aria-expanded="true" aria-controls="topbar-panel" title="Collapse or expand the header">
-        <span class="tbb-chevron" aria-hidden="true">▲</span>
-        <span class="tbb-label">Hide controls</span>
-      </button>
-    </div>
-  </div>
-</div>
+<div id="popover"><strong id="popover-type"></strong><span id="popover-msg"></span></div>
 
-<!-- COLUMNS -->
-<div id="main">
-
-  <!-- COL 0 -->
-  <div class="col" id="col-0">
-    <div class="col-strip">
-      <div class="col-strip-left">
-        <div class="col-dot"></div>
-        <span class="col-summary" id="sum-0">Click ⚙ to configure</span>
-      </div>
-      <div class="col-strip-fz" role="group" aria-label="Font size for focus lists, starters, and hint (not the main brief)">
-        <span class="col-strip-fz-lbl">Scaffold</span>
-        <div class="fz-row strip-fz-row">
-          <button type="button" class="fz-btn cfz-dn" data-col="0" title="Smaller focus lists &amp; starters">−</button>
-          <button type="button" class="fz-btn cfz-up" data-col="0" title="Larger focus lists &amp; starters">+</button>
+<div id="app-shell">
+  <div id="app-body">
+    <aside id="sidebar">
+      <div id="sidebar-brand">
+        <div id="sidebar-brand-icon" aria-hidden="true">✏️</div>
+        <div>
+          <div id="sidebar-brand-text">Writing Coach</div>
+          <div id="sidebar-brand-sub">Mr C's friendly editor</div>
         </div>
       </div>
-      <div class="col-strip-right">
-        <button class="btn-regen" data-col="0">↺</button>
-        <button class="icon-btn" data-toggle="0" title="Settings">⚙</button>
+      <div id="sidebar-head">
+        <div id="sidebar-head-label">Live issues</div>
+        <div id="sidebar-head-issue-title" class="is-placeholder">Tap a highlighted word</div>
+        <div id="sidebar-head-issue-msg"></div>
       </div>
-    </div>
-    <div class="col-drawer" id="drawer-0">
-      <div class="drawer-inner" id="di-0"></div>
-    </div>
-    <div class="col-body" id="body-0"><div class="col-empty">Configure → Generate</div></div>
-    <div class="teacher-panel" id="tp-0">
-      <div class="teacher-header" data-tp="0">
-        <span class="teacher-lbl">Teacher response</span>
-        <div class="teacher-fz" onclick="event.stopPropagation()">
-          <button class="fz-btn tfz-dn" data-col="0">−</button>
-          <span class="fz-val tfz-val" data-col="0">21</span>
-          <button class="fz-btn tfz-up" data-col="0">+</button>
+      <div id="issue-list">
+        <div class="issue-item" id="si-opener"><label class="issue-toggle" title="Include in scan"><input type="checkbox" class="issue-scan-cb" data-issue="opener" checked aria-label="Scan for predictable starts"></label><span class="issue-name">Predictable start</span><span class="issue-count" id="sc-opener">—</span></div>
+        <div class="issue-item" id="si-verb"><label class="issue-toggle" title="Include in scan"><input type="checkbox" class="issue-scan-cb" data-issue="verb" checked aria-label="Scan for weak to-be verbs"></label><span class="issue-name">Weak 'to be' verb</span><span class="issue-count" id="sc-verb">—</span></div>
+        <div class="issue-item" id="si-basic"><label class="issue-toggle" title="Include in scan"><input type="checkbox" class="issue-scan-cb" data-issue="basic" checked aria-label="Scan for basic verbs"></label><span class="issue-name">Basic verb</span><span class="issue-count" id="sc-basic">—</span></div>
+        <div class="issue-item" id="si-adverb"><label class="issue-toggle" title="Include in scan"><input type="checkbox" class="issue-scan-cb" data-issue="adverb" checked aria-label="Scan for adverb overuse"></label><span class="issue-name">Adverb overuse</span><span class="issue-count" id="sc-adverb">—</span></div>
+        <div class="issue-item" id="si-filter"><label class="issue-toggle" title="Include in scan"><input type="checkbox" class="issue-scan-cb" data-issue="filter" checked aria-label="Scan for filter words"></label><span class="issue-name">Filter word</span><span class="issue-count" id="sc-filter">—</span></div>
+        <div class="issue-item" id="si-adj"><label class="issue-toggle" title="Include in scan"><input type="checkbox" class="issue-scan-cb" data-issue="adj" checked aria-label="Scan for weak adjectives"></label><span class="issue-name">Weak adjective</span><span class="issue-count" id="sc-adj">—</span></div>
+        <div class="issue-item" id="si-abstract"><label class="issue-toggle" title="Include in scan"><input type="checkbox" class="issue-scan-cb" data-issue="abstract" checked aria-label="Scan for abstract nouns"></label><span class="issue-name">Abstract noun</span><span class="issue-count" id="sc-abstract">—</span></div>
+        <div class="issue-item" id="si-repeat"><label class="issue-toggle" title="Include in scan"><input type="checkbox" class="issue-scan-cb" data-issue="repeat" checked aria-label="Scan for repeated words"></label><span class="issue-name">Noun/verb repeat</span><span class="issue-count" id="sc-repeat">—</span></div>
+        <div class="issue-item" id="si-stopword"><label class="issue-toggle" title="Include in scan"><input type="checkbox" class="issue-scan-cb" data-issue="stopword" checked aria-label="Scan for stop word clusters"></label><span class="issue-name">Stop word cluster</span><span class="issue-count" id="sc-stopword">—</span></div>
+        <div class="issue-item" id="si-rhythm"><label class="issue-toggle" title="Include in scan"><input type="checkbox" class="issue-scan-cb" data-issue="rhythm" checked aria-label="Scan for flat sentence rhythm"></label><span class="issue-name">Flat sentence rhythm</span><span class="issue-count" id="sc-rhythm">—</span></div>
+      </div>
+      <div id="sidebar-foot">Check types to include in the scan. Tap a name for tips. Red words are live hints — fix them and they vanish.</div>
+    </aside>
+
+    <div id="main-column">
+      <div id="header">
+        <div id="alert-wrap">
+          <div id="alert-bar">
+            <div id="alert-simple">Start writing — your coach is cheering you on!</div>
+            <div id="alert-structured" hidden>
+              <div id="alert-top-title"></div>
+              <div id="alert-top-tip"></div>
+            </div>
+          </div>
+        </div>
+        <div id="header-right">
+          <span id="draft-status" aria-live="polite"></span>
+          <div id="header-tools">
+            <button type="button" class="hbtn hbtn-compact" id="btn-copy" title="Copy all text">Copy</button>
+            <button type="button" class="hbtn hbtn-compact" id="btn-download" title="Download as a text file">Save .txt</button>
+            <button type="button" class="hbtn hbtn-compact" id="btn-print" title="Print or save as PDF">Print</button>
+            <button type="button" class="hbtn" id="btn-undo-clear" hidden>Undo clear</button>
+            <button type="button" class="hbtn" onclick="clearEditor()">Clear</button>
+            <button type="button" class="hbtn" id="theme-btn" onclick="toggleTheme()" title="Toggle cozy night mode">☀</button>
+          </div>
         </div>
       </div>
-      <div class="teacher-body" id="tb-0">
-        <textarea class="teacher-ta" id="ta-0" placeholder="Type your model response here..." rows="4"></textarea>
+
+      <div id="stats-bar">
+        <div class="stat-pill highlight">
+          <span>Words</span>
+          <span class="stat-val" id="wc">0</span>
+        </div>
+        <div class="stat-pill goal-stepper">
+          <span>Goal</span>
+          <div class="goal-controls">
+            <button type="button" class="goal-btn" id="goal-minus" aria-label="Lower goal by 10 words">−</button>
+            <span id="target-display" aria-live="polite">70</span>
+            <button type="button" class="goal-btn" id="goal-plus" aria-label="Raise goal by 10 words">+</button>
+          </div>
+          <input type="hidden" id="target-input" value="70" autocomplete="off">
+        </div>
+        <div class="stat-pill">
+          <span>Progress</span>
+          <div id="progress-wrap"><div id="progress-bar"></div></div>
+        </div>
+        <div id="heat-wrap">
+          <div id="heat-track-row">
+            <span id="heat-label">Heat</span>
+            <div id="heat-track">
+              <div id="heat-slider"></div>
+            </div>
+          </div>
+          <div id="heat-labels">
+            <span>Super</span>
+            <span>Getting warm</span>
+            <span>Fix time!</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="main">
+        <div id="editor-card">
+          <div id="editor-wrap">
+            <div id="editor" contenteditable="true" spellcheck="true"
+                 data-placeholder="Write your story here — your coach highlights spots to polish…"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
-  <!-- COL 1 -->
-  <div class="col" id="col-1">
-    <div class="col-strip">
-      <div class="col-strip-left">
-        <div class="col-dot"></div>
-        <span class="col-summary" id="sum-1">Click ⚙ to configure</span>
-      </div>
-      <div class="col-strip-fz" role="group" aria-label="Font size for focus lists, starters, and hint (not the main brief)">
-        <span class="col-strip-fz-lbl">Scaffold</span>
-        <div class="fz-row strip-fz-row">
-          <button type="button" class="fz-btn cfz-dn" data-col="1" title="Smaller focus lists &amp; starters">−</button>
-          <button type="button" class="fz-btn cfz-up" data-col="1" title="Larger focus lists &amp; starters">+</button>
-        </div>
-      </div>
-      <div class="col-strip-right">
-        <button class="btn-regen" data-col="1">↺</button>
-        <button class="icon-btn" data-toggle="1" title="Settings">⚙</button>
-      </div>
+  <div id="issue-explainer" aria-hidden="true" role="dialog" aria-modal="false" aria-labelledby="issue-explainer-title">
+    <div id="issue-explainer-head">
+      <h3 id="issue-explainer-title"></h3>
+      <button type="button" id="issue-explainer-close" aria-label="Close explanation">×</button>
     </div>
-    <div class="col-drawer" id="drawer-1">
-      <div class="drawer-inner" id="di-1"></div>
-    </div>
-    <div class="col-body" id="body-1"><div class="col-empty">Configure → Generate</div></div>
-    <div class="teacher-panel" id="tp-1">
-      <div class="teacher-header" data-tp="1">
-        <span class="teacher-lbl">Teacher response</span>
-        <div class="teacher-fz" onclick="event.stopPropagation()">
-          <button class="fz-btn tfz-dn" data-col="1">−</button>
-          <span class="fz-val tfz-val" data-col="1">21</span>
-          <button class="fz-btn tfz-up" data-col="1">+</button>
-        </div>
-      </div>
-      <div class="teacher-body" id="tb-1">
-        <textarea class="teacher-ta" id="ta-1" placeholder="Type your model response here..." rows="4"></textarea>
-      </div>
-    </div>
+    <div id="issue-explainer-body"></div>
   </div>
-
-  <!-- COL 2 -->
-  <div class="col" id="col-2">
-    <div class="col-strip">
-      <div class="col-strip-left">
-        <div class="col-dot"></div>
-        <span class="col-summary" id="sum-2">Click ⚙ to configure</span>
-      </div>
-      <div class="col-strip-fz" role="group" aria-label="Font size for focus lists, starters, and hint (not the main brief)">
-        <span class="col-strip-fz-lbl">Scaffold</span>
-        <div class="fz-row strip-fz-row">
-          <button type="button" class="fz-btn cfz-dn" data-col="2" title="Smaller focus lists &amp; starters">−</button>
-          <button type="button" class="fz-btn cfz-up" data-col="2" title="Larger focus lists &amp; starters">+</button>
-        </div>
-      </div>
-      <div class="col-strip-right">
-        <button class="btn-regen" data-col="2">↺</button>
-        <button class="icon-btn" data-toggle="2" title="Settings">⚙</button>
-      </div>
-    </div>
-    <div class="col-drawer" id="drawer-2">
-      <div class="drawer-inner" id="di-2"></div>
-    </div>
-    <div class="col-body" id="body-2"><div class="col-empty">Configure → Generate</div></div>
-    <div class="teacher-panel" id="tp-2">
-      <div class="teacher-header" data-tp="2">
-        <span class="teacher-lbl">Teacher response</span>
-        <div class="teacher-fz" onclick="event.stopPropagation()">
-          <button class="fz-btn tfz-dn" data-col="2">−</button>
-          <span class="fz-val tfz-val" data-col="2">21</span>
-          <button class="fz-btn tfz-up" data-col="2">+</button>
-        </div>
-      </div>
-      <div class="teacher-body" id="tb-2">
-        <textarea class="teacher-ta" id="ta-2" placeholder="Type your model response here..." rows="4"></textarea>
-      </div>
-    </div>
-  </div>
-
-</div>
 </div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────────────
-const TENETS = [
-  {id:1,  n:'Pronoun & Pointer Openers'},
-  {id:2,  n:'Weak "To Be" Verbs'},
-  {id:3,  n:'Basic Verb Use'},
-  {id:4,  n:'Noun & Verb Repetition'},
-  {id:5,  n:'Weak Adjectives'},
-  {id:6,  n:'Adverb Overuse'},
-  {id:7,  n:'Stop Word Overload'},
-  {id:8,  n:'Sentence Construction'},
-  {id:9,  n:'Literary Devices'},
-  {id:10, n:'Paragraph Cohesion'},
-  {id:11, n:'Narrative Sentence Types (ATFDS)'},
-  {id:12, n:'Author Stems'},
-  {id:13, n:'Information Adders'},
-  {id:14, n:'Filter Words'},
-];
+/* First word of a sentence (after . ! ? … or newline), case-insensitive */
+const OPENERS = new Set([
+  'the','it','a','an','he','she','his','her','this','these','those','they','then','there','i','my','we','our'
+]);
+const WEAK_VERBS = new Set(['was','were','is','are','has','had','have','be','been','being','wasn\'t','weren\'t','isn\'t','aren\'t','hasn\'t','hadn\'t','haven\'t','ain\'t',"wasn't","weren't","isn't","aren't","hasn't","hadn't","haven't"]);
+const BASIC_VERBS = new Set(['looked','look','looks','looking','saw','see','sees','seeing','said','say','says','saying','walked','walk','walks','walking','ran','run','runs','running','went','go','goes','going','made','make','makes','making','came','come','comes','coming','got','get','gets','getting','put','puts','putting','took','take','takes','taking','told','tell','tells','telling','asked','ask','asks','asking','thought','think','thinks','thinking','knew','know','knows','knowing','felt','feel','feels','feeling','seemed','seem','seems','seeming','tried','try','tries','trying','called','call','calls','calling','used','use','uses','using','left','leave','leaves','leaving','found','find','finds','finding','brought','bring','brings','bringing','moved','move','moves','moving','turned','turn','turns','turning','stood','stand','stands','standing','sat','sit','sits','sitting','lay','lie','lies','lying']);
+const FILTER_WORDS = new Set(['felt','feel','feels','feeling','saw','see','noticed','notice','heard','hear','hears','wondered','wonder','thought','think','realised','realized','realise','realize','watched','watch','seemed','seem','decided','decide','knew','know']);
+const WEAK_ADJS = new Set(['big','large','small','little','old','young','new','good','bad','nice','great','hot','cold','dark','light','bright','long','short','tall','high','low','fast','slow','loud','quiet','happy','sad','angry','scared','tired','pretty','ugly','thin','fat','thick','wide','narrow','deep','heavy','soft','hard','rough','smooth','clean','dirty','empty','full','open','closed','dead','alive','true','false','real','fake','free','safe','easy','hard','funny','boring','interesting','cool','warm','wet','dry']);
+const ABSTRACT_NOUNS = new Set(['sadness','happiness','grief','loneliness','fear','anger','love','hate','joy','sorrow','pain','suffering','hope','despair','anxiety','relief','excitement','confusion','shame','guilt','pride','jealousy','envy','boredom','longing','regret','embarrassment','contentment','misery','fury','terror','courage','cowardice','beauty','ugliness','freedom','justice','truth','evil','good','kindness','cruelty','wisdom','ignorance','success','failure','strength','weakness','power','helplessness','trauma','emotion','feeling','sense','thought','idea','concept','notion','belief','attitude','mood','spirit','soul','consciousness','essence','nature','existence','reality','destiny','fate','purpose','meaning','understanding','awareness','experience','knowledge','memory','imagination','creativity','intelligence','personality','character','identity']);
+const STOP_WORDS = new Set(['the','a','an','and','of','to','in','is','it','that','was','for','on','are','with','as','at','this','by','from','or','but','not','be','which','have','had','he','she','they','we','you','i','his','her','their','our','its','been','being','has','do','did','does','so','if','up','out','about','than','then','there','when','where','who','how','all','would','could','should','will','can','may','might','shall','what','my','your','him','them','us','me','no','one','more','just','also','into','onto','upon','over','under','after','before','during','while','though','although','because','since','until','unless','whether','both','either','neither','each','every','any','some','most','much','many','few','own','same','other','such','like','well','even','only','too','very','still','already','again','now','here','there','back','away','around','through','between','among','against','without','within','along','across','behind','below','above','off','down']);
 
-const STAGE_DESC = {
-  who:'introduce character through physical detail, contradiction, behaviour — reveal before naming',
-  where:'establish setting through rich sensory detail, atmosphere, pathetic fallacy — place as mood',
-  what:'the inciting situation — grounded action, the thing that starts the story moving',
-  tension:'rising dread or anticipation — slow time, interiority, physical sensation of fear/excitement',
-  complication:'the unexpected obstacle or twist — shock, disruption, character under pressure',
-  climax:'peak moment — raw, fast, maximum pace, the point of no return',
-  resolution:'aftermath — reflection, consequence, changed state, emotional landing',
-  flashback:'memory intrusion — sensory trigger, tense shift, contrast between past and present'
+const TYPE_LABELS = {
+  opener:'Predictable start', verb:"Weak 'to be' verb", basic:'Basic verb',
+  adverb:'Adverb overuse', filter:'Filter word', adj:'Weak adjective',
+  abstract:'Abstract noun', repeat:'Noun/verb repeat', stopword:'Stop word cluster',
+  rhythm:'Flat sentence rhythm'
 };
 
-const TENET_DEFS = `T1: avoid starting sentences with pronouns/pointers (it/he/she/this/they/there/then/here/too/a/an)
-T2: avoid weak "to be" verbs (was/were/is/are/had/have/been) — use action verbs instead
-T3: replace basic verbs (looked/saw/went/said/walked/made/came/got) with vivid precise ones
-T4: avoid repeating key nouns or verbs in adjacent sentences — use elegant variation
-T5: use double or triple adjectives beyond size/colour — explore texture, mood, feeling, sound, temperature
-T6: replace adverb+weak verb combos with a single strong precise verb
-T7: reduce stop word density — every word earns its place (target 28% by Yr12)
-T8: vary sentence construction — Triple Where, Dual Perspective, Triple Punchers, Quadruple Verb, Role Reversal, Advanced Triple Descriptor, Nested Who, Em-Dash Descriptor, Many/Most, With Double Hand, Personification Descriptor, Adverb Simile Start
-T9: deploy literary devices beyond simile/metaphor: polysyndeton, asyndeton, synecdoche, metonymy, anaphora, epistrophe, oxymoron, paradox, pathetic fallacy, sibilance, tricolon, juxtaposition
-T10: cohesive paragraphs where every sentence serves one clear purpose, connected with purposeful transitions
-T11: narrative paragraphs need a deliberate mix of Action/Thinking/Feeling/Description/Story-Atmosphere/Dialogue sentence types matched to story stage
-T12: use author stems (strong first 5-6 words) to launch powerful sentences the student would never have chosen independently
-T13: extend sentences with information adders — causal (...which caused her to / ...because last time), qualifying (...at least, that's what she told herself), contextual (...something she hadn't done since), contrastive (...despite knowing what it would cost her)
-T14: eliminate filter words (felt/saw/heard/noticed/realised/wondered/seemed/thought) — write through the character, not about them`;
+const ISSUE_KEYS = ['opener','verb','basic','adverb','filter','adj','abstract','repeat','stopword','rhythm'];
+const DEFAULT_ISSUE_SCAN = ISSUE_KEYS.reduce(function(acc, k) { acc[k] = true; return acc; }, {});
+let issueScanEnabled = Object.assign({}, DEFAULT_ISSUE_SCAN);
 
-/** Prompt sections — prevent narrative-only defaults when type ≠ narrative */
-function topicFallbackForType(type){
-  if(type==='analytical')return 'No topic set — choose a specific named text (film, novel, play, short story, or poem) and a focused analytical angle (theme, character, technique, director choice, comparison).';
-  if(type==='persuasive')return 'No topic set — choose a concrete persuasive situation: what issue, who is the audience, and what decision or belief is at stake.';
-  return 'No topic set — choose a specific narrative springboard (character, situation, conflict, setting hook).';
-}
-
-function writingTypeRules(type){
-  if(type==='analytical')return`
-WRITING-TYPE LOCK: ANALYTICAL (English school context — mandatory)
-Australian English analytical tasks respond to STUDIED TEXTS (novels, short stories, plays, poetry, film as text). They are NOT creative scene description dressed as analysis.
-
-FORBIDDEN: standalone “vivid” sensory paragraphs about a market/waterfall/generic location presented as the analytical stimulus. That is narrative/description, not analysis.
-
-REQUIRED:
-- Name at least one plausible text (title + form: e.g. novel / film / play) OR clearly frame an extract/stanza/scene FROM a text.
-- instruction must sound analytical: evidence, techniques, author/director intent, how meaning is shaped, compare/contrast — never “describe this scene” as the core task.
-- UPGRADE stimulus: weak STUDENT analytical writing — summary-heavy, vague claims, feature-spotting without effect, missing quotes/references, “the author uses …” without depth.
-- CREATE stimulus: follow EXERCISE-TYPE DIFFERENTIATION above (composition + cue bullets and/or sentence starters; short quote only as framing). Tenets apply to sentence craft WITHIN analytical discourse.
-`;
-  if(type==='persuasive')return`
-WRITING-TYPE LOCK: PERSUASIVE (mandatory)
-Persuasion argues a POSITION for an AUDIENCE with REASONS — not atmosphere-only travel writing.
-
-FORBIDDEN: pure descriptive paragraphs about a beautiful place with no contention, stakes, or call to action (that is narrative/description).
-
-REQUIRED:
-- Stimulus must embed or imply: what belief/action is sought, who is addressed, and why it matters — OR a clear debate motion / opinion column brief / pitch rubric.
-- If description appears, it serves persuasion (evidence, emotional appeal) under a stated or obvious position (e.g. “Why council must fund …”, “Why families should/shouldn’t …”).
-- UPGRADE stimulus: flawed persuasive draft — weak reasons, description substituting for argument, rhetorical questions without support.
-- CREATE stimulus: follow EXERCISE-TYPE DIFFERENTIATION above (rhetorical situation + cues/starters for original persuasive writing). Selected tenets inform HOW they compose.
-`;
-  return`
-WRITING-TYPE LOCK: NARRATIVE (creative)
-Scene, character, conflict, and story-stage craft are appropriate. Use story-stage guidance below.
-`;
-}
-
-/** CREATE vs UPGRADE — models often blur these; rules are explicit. */
-function exerciseTypeDifferentiation(extypes){
-  const hasU = extypes.has('upgrade');
-  const hasC = extypes.has('create');
-  const weakOpeners = 'Do not start any starter with weak pronoun/pointer openers (case-insensitive first word): it, a, an, he, she, him, his, her, they, them, this, these, that, those. Avoid expletive "There/Then" as the first word unless "There" is clearly adverbial place ("There, beyond…").';
-  const starterMix = `SENTENCE STARTERS (8 strings; each is ONLY the first 4–5 words of a possible sentence):
-- **At most 4** of the 8 may be **noun-led** subject openers: proper nouns, bare nouns, or article + noun ("Maya hesitated…", "Sparks flew…", "The corridor…", "A whisper…"). Count these toward the max of four.
-- The **other starters (at least 4)** must **not** be noun-first: use **prepositions** (In, On, After, Through, Beyond, Under, Without,…), **adverbs of time or place** (Yesterday, Tonight, Inside, Downstairs,…), **subordinating conjunctions** (Although, When, While, If, After,…), **participial** openers (Frowning, Trapped,…), or **strong verb-first** lines ("Scratch that thought…") — varied and engaging.
-- Across all 8, vary rhythm; never make more than 4 noun-led. ${weakOpeners}`;
-  const createCore = `CREATE (original composition — NOT the same as UPGRADE):
-- Students WRITE new sentence(s) or paragraph(s) from scratch.
-- MANDATORY JSON fields (when CREATE is selected): include "focus_points" and "sentence_starters" as arrays — NOT prose lists inside "stimulus".
-- "focus_points": exactly 5 strings — concise dot-point cues for WHAT to focus on while composing (genre + tenets aligned).
-- "sentence_starters": exactly 8 strings — follow STARTER MIX rules below.
-${starterMix}
-- "stimulus" field: the ONLY text shown in the on-screen Brief card (no separate headline). For CREATE-style scenarios: **maximum 40 words total** — embed the writing invite into the scenario so you do NOT need a separate "Write a…" instruction line. Do NOT duplicate the 5 focus strings or 8 starters here.
-- UI renders focus_points and sentence_starters in two columns — teachers must see exactly 5 + 8 items.`;
-
-  const upgradeCore = `UPGRADE (revision task — NOT the same as CREATE):
-- Stimulus is flawed EXISTING student-style writing only (sentence or paragraph per MODE): authentic tenet flaws for the year band.
-- Student IMPROVES this supplied text. Do NOT make the main stimulus a composition brief with sentence starters — that is CREATE.`;
-
-  if(hasU && !hasC)return upgradeCore + `\n- ONLY UPGRADE is selected — set "focus_points" and "sentence_starters" to null in JSON. Omit CREATE arrays.`;
-  if(hasC && !hasU)return createCore + `\n- ONLY CREATE is selected — stimulus is **max 40 words**; 5 focus_points and 8 sentence_starters in JSON; no full weak paragraph as sole content.`;
-  return `${upgradeCore}\n\n${createCore}\n\nBOTH UPGRADE AND CREATE SELECTED:\n- JSON must include flawed passage in "stimulus" (upgrade) PLUS brief CREATE scenario can precede or follow in stimulus with clear labels OR keep stimulus mainly upgrade block and rely on arrays for CREATE scaffolding.\n- Still output exactly 5 focus_points and 8 sentence_starters for the CREATE composition part; set arrays null only if impossible (prefer always filling them for the composition section).\n- Optional: end stimulus with "Warm-up edit:" one weak sentence for upgrade — stimulus + hint must name both UPGRADE edit and CREATE writing using the arrays.`;
-}
-
-function stimulusFieldHelp(type, topic, yearLabel){
-  const t = topic.trim()||topicFallbackForType(type);
-  const yr = yearLabel;
-  if(type==='analytical'){
-    return`UPGRADE: weak analytical prose in stimulus (may be paragraph-length). CREATE: scenario in stimulus — **max 40 words**, no separate headline; 5 focus_points + 8 sentence_starters in JSON. Topic: ${t}. Band: ${yr}.`;
-  }
-  if(type==='persuasive'){
-    return`UPGRADE: flawed passage in stimulus. CREATE: single brief block — **max 40 words** (scenario + invite); 5 focus_points + 8 sentence_starters in JSON. Topic: ${t}. Band: ${yr}.`;
-  }
-  return`UPGRADE: flawed sample in stimulus (full length). CREATE: brief in stimulus — **max 40 words**; 5 focus_points + 8 sentence_starters in JSON. Topic: ${t}. YEAR-BAND CALIBRATION applies.`;
-}
-
-/** Forces strongly different stimulus sophistication per schooling band (same tenets must still feel different across Yr 5–6 vs 9–12). */
-function yearBandCalibration(year){
-  const bands = {
-    'yr2-4': `YEAR-BAND CALIBRATION (mandatory — applies to stimulus + task voice)
-BRACKET: Year 2–4 (ages ~7–10)
-- Stimulus: very short utterances; concrete everyday words; simple AND compound sentences only; flaws are obvious and primary-level (repetition, tiny vocabulary, basic verbs).
-- Average sentence length ~6–12 words; almost no subordinate clauses.
-- FORBIDDEN here: senior-secondary sentence density, abstract argument, or “essay” tone.`,
-    'yr5-6': `YEAR-BAND CALIBRATION (mandatory — applies to stimulus + task voice)
-BRACKET: Year 5–6 (ages ~10–12)
-- Stimulus: upper-primary voice — mostly simple + compound sentences; familiar vocabulary; flaws feel like strong primary drafts (overuse of really/very/just, plain size/colour adjectives, thin coordination “and then”).
-- Keep imagery limited; emotional stakes simple and stated plainly.
-- FORBIDDEN: prose that could be mistaken for Year 9–12 complexity — no multi-clause sophistication stacks, no faux-literary diction.`,
-    'yr7-8': `YEAR-BAND CALIBRATION (mandatory — applies to stimulus + task voice)
-BRACKET: Year 7–8 (ages ~12–14)
-- Stimulus: lower-secondary voice — clear step-up from primary: mix of compound + some complex sentences; emerging imagery; occasional awkward subordination or vague intensifiers.
-- Flaws are subtler than Yr 5–6 (thin metaphors, loose modifiers, telling-not-showing) but still younger than senior years.
-- MUST read clearly harder than Yr 5–6 and clearly simpler than Yr 9–12 — not interchangeable with either.`,
-    'yr9-12': `YEAR-BAND CALIBRATION (mandatory — applies to stimulus + task voice)
-BRACKET: Year 9–12 (ages ~14–18)
-- Stimulus: senior-secondary voice — dense clauses, abstract nouns, rhetorical reach, mature themes; weaknesses must mimic older drafts (wordiness, redundancy pairs, mixed registers, pretentious diction OR polished-but-empty “essay voice”).
-- Tenet flaws sit inside LONGER, layered sentences — NOT the same short prim patterns used for younger bands.
-- FORBIDDEN: three-line prim paragraphs that differ only by synonym — if Yr 5–6 stimulus could be swapped here unchanged, you have FAILED calibration.
-- Minimum: noticeably higher syntactic density and lexical range than Yr 7–8 for comparable tasks.`
-  };
-  return bands[year] || bands['yr9-12'];
-}
-
-/** Max tenet chips selectable per year band (teacher UI + generation). */
-function maxTenetsForYear(year){
-  const m = { 'yr2-4': 2, 'yr5-6': 3, 'yr7-8': 4, 'yr9-12': 5 };
-  return m[year] != null ? m[year] : 5;
-}
-
-// ── PER-COLUMN STATE ──────────────────────────────────────────────────────────
-const DEFAULTS = [
-  {year:'yr5-6',  type:'narrative',  stage:'who',          tenets:[], modes:new Set(), extypes:new Set(), topic:''},
-  {year:'yr7-8',  type:'narrative',  stage:'tension',      tenets:[], modes:new Set(), extypes:new Set(), topic:''},
-  {year:'yr9-12', type:'persuasive', stage:'who',          tenets:[], modes:new Set(), extypes:new Set(), topic:''},
-];
-
-const colState = DEFAULTS.map(d => ({...d, tenets:[...d.tenets], modes:new Set(d.modes), extypes:new Set(d.extypes)}));
-
-const COL_STATE_KEY = 'aw_col_state';
-let saveColStateTimer;
-function scheduleSaveColState(){
-  clearTimeout(saveColStateTimer);
-  saveColStateTimer = setTimeout(saveColState, 140);
-}
-function saveColState(){
-  try{
-    const payload = colState.map(st=>({
-      year:st.year,type:st.type,stage:st.stage,
-      tenets:[...st.tenets],
-      modes:[...st.modes],
-      extypes:[...st.extypes],
-      topic:typeof st.topic==='string'?st.topic:''
-    }));
-    localStorage.setItem(COL_STATE_KEY, JSON.stringify(payload));
-  }catch(e){}
-}
-function loadColState(){
-  try{
-    const raw = localStorage.getItem(COL_STATE_KEY);
-    if(!raw)return;
-    const arr = JSON.parse(raw);
-    if(!Array.isArray(arr)||arr.length!==3)return;
-    const years = ['yr2-4','yr5-6','yr7-8','yr9-12'];
-    const types = ['narrative','persuasive','analytical'];
-    const stages = ['who','where','what','tension','complication','climax','resolution','flashback'];
-    arr.forEach((saved,i)=>{
-      if(!saved||typeof saved!=='object')return;
-      const st = colState[i];
-      if(years.includes(saved.year)) st.year = saved.year;
-      if(types.includes(saved.type)) st.type = saved.type;
-      if(stages.includes(saved.stage)) st.stage = saved.stage;
-      if(Array.isArray(saved.tenets)){
-        st.tenets = saved.tenets.filter(x=>Number.isInteger(x)&&x>=1&&x<=14);
-        const mx = maxTenetsForYear(st.year);
-        if(st.tenets.length>mx) st.tenets = st.tenets.slice(0,mx);
-      }
-      const ms = Array.isArray(saved.modes)?saved.modes.filter(x=>x==='sentence'||x==='paragraph'):[];
-      const es = Array.isArray(saved.extypes)?saved.extypes.filter(x=>x==='upgrade'||x==='create'):[];
-      st.modes = new Set(ms);
-      st.extypes = new Set(es);
-      if(typeof saved.topic==='string') st.topic = saved.topic;
+function loadIssueScanPrefs() {
+  try {
+    const raw = localStorage.getItem('writingCoachIssueScanV1');
+    if (!raw) return;
+    const p = JSON.parse(raw);
+    if (!p || typeof p !== 'object') return;
+    ISSUE_KEYS.forEach(function(k) {
+      if (typeof p[k] === 'boolean') issueScanEnabled[k] = p[k];
     });
-  }catch(e){}
+  } catch (e) {}
 }
-loadColState();
 
-// ── NAMED PRESETS (saved setups in localStorage) ───────────────────────────────
-const PRESETS_KEY = 'aw_named_presets';
-const PRESET_MAX = 25;
-let suppressPresetChange = false;
-function loadPresetsList(){
-  try{
-    const raw = localStorage.getItem(PRESETS_KEY);
-    if(!raw) return [];
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr : [];
-  }catch(e){ return []; }
+function saveIssueScanPrefs() {
+  try {
+    localStorage.setItem('writingCoachIssueScanV1', JSON.stringify(issueScanEnabled));
+  } catch (e) {}
 }
-function savePresetsList(arr){ try{ localStorage.setItem(PRESETS_KEY, JSON.stringify(arr)); }catch(e){} }
-function clampFzPx(n){
-  const x = typeof n==='number' ? n : parseInt(n,10);
-  if(!Number.isFinite(x)) return null;
-  return Math.min(60, Math.max(15, x));
+
+function syncIssueScanCheckboxes() {
+  document.querySelectorAll('.issue-scan-cb').forEach(function(cb) {
+    const k = cb.getAttribute('data-issue');
+    if (k && issueScanEnabled[k] !== undefined) cb.checked = issueScanEnabled[k];
+  });
 }
-function capturePresetSnapshot(){
-  return {
-    columns: colState.map(st=>({
-      year: st.year, type: st.type, stage: st.stage,
-      tenets: [...st.tenets],
-      modes: [...st.modes],
-      extypes: [...st.extypes],
-      topic: typeof st.topic === 'string' ? st.topic : ''
-    })),
-    fonts: { gFz, cFz: [...cFz], tFz: [...tFz] },
-    teacherDrafts: [0,1,2].map(i=>{
-      const ta = document.getElementById(`ta-${i}`);
-      return ta ? ta.value : '';
-    }),
-    ui: {
-      drawersOpen: [0,1,2].map(i=>document.getElementById(`drawer-${i}`).classList.contains('open')),
-      teacherOpen: [0,1,2].map(i=>document.getElementById(`tb-${i}`).classList.contains('open'))
+
+const ISSUE_HELP_HTML = {
+  opener: '<p>Starting tons of sentences with <strong>The, It, A, An, He, She, His, Her, I, My, This, These, Those, They, Then, There</strong> is super common — readers can guess what comes next before they even finish the line.</p><p><strong>Fix:</strong> Open with a sound, an action, or one sharp detail so the first words grab attention. Move the “There were…” idea to the middle if you need it.</p><p class="issue-explainer-example"><strong>Kid example:</strong> Instead of “It was hot at recess,” try “Heat bounced off the blacktop at recess.”</p>',
+  verb: '<p>Words like <strong>was, were, is, are, has, had, have, be, been, being and n\'t versions</strong> say something “exists,” but they don’t always show what’s <em>happening</em> right now.</p><p><strong>Fix:</strong> Swap in verbs that show motion, change, or a picture we can see (burned, rattled, sprinted, froze…).</p><p class="issue-explainer-example"><strong>Kid example:</strong> Instead of “The bus is here,” try “The bus groaned up to the curb, brakes squeaking.”</p>',
+  basic: '<p>Verbs like <strong>went</strong>, <strong>said</strong>, <strong>looked</strong>, <strong>got</strong>, and <strong>made</strong> work in almost every story — so they feel fuzzy and same-y.</p><p><strong>Fix:</strong> Pick one verb that matches <em>your</em> exact moment (biked, muttered, stared, scored, glued…).</p><p class="issue-explainer-example"><strong>Kid example:</strong> Instead of “We ran in gym,” try “We sprinted laps until our sides cramped.”</p>',
+  adverb: '<p>Words ending in <strong>-ly</strong> (like <em>quickly</em>, <em>really</em>, <em>slowly</em>) often repeat what the verb should already show.</p><p><strong>Fix:</strong> Delete the adverb and upgrade the verb instead — one strong verb beats verb + weak -ly.</p><p class="issue-explainer-example"><strong>Kid example:</strong> Instead of “He ran quickly,” try “He sprinted” or “He tore down the hall.”</p>',
+  filter: '<p>Phrases like <strong>I saw</strong>, <strong>I felt</strong>, <strong>I thought</strong>, and <strong>I heard</strong> sit between the reader and the action — like watching everything through a window.</p><p><strong>Fix:</strong> Put us inside the scene: show what happened without the “I saw/felt” wrapper.</p><p class="issue-explainer-example"><strong>Kid example:</strong> Instead of “I heard the bell,” try “The bell clanged over everyone’s heads.”</p>',
+  adj: '<p>Words like <strong>good</strong>, <strong>nice</strong>, <strong>big</strong>, <strong>bad</strong>, and <strong>fun</strong> are fuzzy — ten kids picture ten different things.</p><p><strong>Fix:</strong> Trade them for one or two details we can see, hear, or feel (chrome stickers, squeaky hinge, glue-you-to-your-seat funny…).</p><p class="issue-explainer-example"><strong>Kid example:</strong> Instead of “The movie was good,” try “The movie glued me to the seat — I forgot my phone.”</p>',
+  abstract: '<p>Big feeling words — <strong>fear</strong>, <strong>sadness</strong>, <strong>anger</strong>, <strong>happiness</strong> — stay cloudy until you show what they look like in real life.</p><p><strong>Fix:</strong> Write what someone does, says, or feels in their body when that emotion hits.</p><p class="issue-explainer-example"><strong>Kid example:</strong> Instead of “Sadness hit me,” try “My throat tightened and I stared at my shoes.”</p>',
+  repeat: '<p>Using the <strong>same noun or verb</strong> back-to-back across sentences makes writing sound clunky, like a robot wrote it.</p><p><strong>Fix:</strong> Use a pronoun (<em>they</em>, <em>it</em>), a synonym, or smoosh two short sentences into one smooth line.</p><p class="issue-explainer-example"><strong>Kid example:</strong> Instead of “My phone died. I charged my phone,” try “My phone died, so I plugged it in.”</p>',
+  stopword: '<p>Little glue words (<strong>the</strong>, <strong>of</strong>, <strong>that</strong>, <strong>was</strong>…) are fine alone — but when they pile up in a row, the sentence gets mushy and hard to read.</p><p><strong>Fix:</strong> Cut repeats, swap “in order to” for “to,” and say the thing in fewer, clearer words.</p><p class="issue-explainer-example"><strong>Kid example:</strong> Instead of “It was one of the things that was weird,” try “One thing today was straight-up weird.”</p>',
+  rhythm: '<p>When <strong>every sentence is the same length</strong>, the paragraph feels sleepy — like a drumbeat with no surprise.</p><p><strong>Fix:</strong> Mix short punchy lines with longer ones. Read out loud: if you’re bored, combine two choppy sentences or split one long sentence.</p><p class="issue-explainer-example"><strong>Kid example:</strong> Instead of five tiny sentences in a row (“I woke up. I ate. I ran…”), try one longer sentence with commas or a dash for energy.</p>'
+};
+
+function showIssueExplainer(key) {
+  const panel = document.getElementById('issue-explainer');
+  const titleEl = document.getElementById('issue-explainer-title');
+  const bodyEl = document.getElementById('issue-explainer-body');
+  if (!panel || !titleEl || !bodyEl) return;
+  titleEl.textContent = TYPE_LABELS[key] || key;
+  bodyEl.innerHTML = ISSUE_HELP_HTML[key] || '<p>No tips loaded for this issue yet.</p>';
+  panel.classList.add('visible');
+  panel.setAttribute('aria-hidden', 'false');
+  requestAnimationFrame(function() {
+    const closeBtn = document.getElementById('issue-explainer-close');
+    if (closeBtn) closeBtn.focus({ preventScroll: true });
+  });
+}
+
+function hideIssueExplainer() {
+  const panel = document.getElementById('issue-explainer');
+  if (!panel) return;
+  panel.classList.remove('visible');
+  panel.setAttribute('aria-hidden', 'true');
+}
+
+(function bindIssueExplainer() {
+  const list = document.getElementById('issue-list');
+  const closeBtn = document.getElementById('issue-explainer-close');
+  if (closeBtn) closeBtn.addEventListener('click', hideIssueExplainer);
+  if (!list) return;
+  list.addEventListener('change', function(e) {
+    const cb = e.target;
+    if (!cb.classList || !cb.classList.contains('issue-scan-cb')) return;
+    const key = cb.getAttribute('data-issue');
+    if (!key || issueScanEnabled[key] === undefined) return;
+    issueScanEnabled[key] = cb.checked;
+    saveIssueScanPrefs();
+    analyseAndRender();
+  });
+  list.addEventListener('click', function(e) {
+    if (e.target.closest('.issue-toggle')) return;
+    const row = e.target.closest('.issue-item');
+    if (!row || row.id.indexOf('si-') !== 0) return;
+    e.stopPropagation();
+    showIssueExplainer(row.id.slice(3));
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') hideIssueExplainer();
+  });
+})();
+
+function cleanCoachMsg(msg) {
+  return msg.replace(/^[^"]*"[^"]*"\s*—\s*/, '').replace(/^[^—]*—\s*/, '');
+}
+
+function clearIssueMenuSelection() {
+  document.querySelectorAll('.issue-item.issue-selected').forEach(function(el) {
+    el.classList.remove('issue-selected');
+  });
+}
+
+function setIssueMenuHighlight(type) {
+  clearIssueMenuSelection();
+  if (!type) return;
+  const row = document.getElementById('si-' + type);
+  if (row) {
+    row.classList.add('issue-selected');
+    row.scrollIntoView({
+      block: 'nearest',
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+    });
+  }
+}
+
+let debounceTimer = null;
+let lastAlert = '';
+
+const STORAGE_KEY = 'writingCoachDraftV1';
+const MAX_ANALYSIS_CHARS = 120000;
+const MAX_PASTE_CHARS = 80000;
+let lastClearedSnapshot = null;
+let saveDraftTimer = null;
+let draftStatusClearTimer = null;
+
+function setDraftStatus(mode, extraMsg) {
+  const el = document.getElementById('draft-status');
+  if (!el) return;
+  clearTimeout(draftStatusClearTimer);
+  el.className = '';
+  if (mode === 'saving') {
+    el.textContent = 'Saving…';
+    el.className = 'status-saving';
+  } else if (mode === 'saved') {
+    el.textContent = 'Draft saved';
+    el.className = 'status-saved';
+    draftStatusClearTimer = setTimeout(function() {
+      el.textContent = '';
+      el.className = '';
+    }, 2500);
+  } else if (mode === 'copy') {
+    el.textContent = 'Copied!';
+    el.className = 'status-copy';
+    draftStatusClearTimer = setTimeout(function() {
+      el.textContent = '';
+      el.className = '';
+    }, 2000);
+  } else if (mode === 'warn') {
+    el.textContent = extraMsg || 'Paste too large — try a smaller chunk.';
+    el.className = 'status-warn';
+    draftStatusClearTimer = setTimeout(function() {
+      el.textContent = '';
+      el.className = '';
+    }, 4000);
+  } else if (mode === 'restored') {
+    el.textContent = 'Draft restored';
+    el.className = 'status-saved';
+    draftStatusClearTimer = setTimeout(function() {
+      el.textContent = '';
+      el.className = '';
+    }, 2500);
+  } else {
+    el.textContent = '';
+  }
+}
+
+function scheduleSaveDraft() {
+  const statusEl = document.getElementById('draft-status');
+  const skipPulse =
+    statusEl &&
+    statusEl.className.indexOf('status-copy') === -1 &&
+    statusEl.textContent === 'Draft restored';
+  if (statusEl && statusEl.className.indexOf('status-copy') === -1 && !skipPulse) {
+    setDraftStatus('saving');
+  }
+  clearTimeout(saveDraftTimer);
+  saveDraftTimer = setTimeout(function() {
+    try {
+      const editor = document.getElementById('editor');
+      const hidden = document.getElementById('target-input');
+      const data = {
+        v: 1,
+        html: sanitizeStoredEditorHtml(editor.innerHTML),
+        goal: hidden ? hidden.value : '70',
+        night: document.body.classList.contains('theme-night')
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      setDraftStatus('saved');
+    } catch (err) {
+      const el = document.getElementById('draft-status');
+      if (el) {
+        el.textContent = 'Could not save draft';
+        el.className = 'status-warn';
+      }
     }
-  };
+  }, 900);
 }
-function assignColumnFromSaved(saved,i){
-  const st = colState[i];
-  const years = ['yr2-4','yr5-6','yr7-8','yr9-12'];
-  const types = ['narrative','persuasive','analytical'];
-  const stages = ['who','where','what','tension','complication','climax','resolution','flashback'];
-  if(!saved||typeof saved!=='object') return;
-  if(years.includes(saved.year)) st.year = saved.year;
-  if(types.includes(saved.type)) st.type = saved.type;
-  if(stages.includes(saved.stage)) st.stage = saved.stage;
-  if(Array.isArray(saved.tenets)){
-    st.tenets = saved.tenets.filter(x=>Number.isInteger(x)&&x>=1&&x<=14);
-    const mx = maxTenetsForYear(st.year);
-    if(st.tenets.length > mx) st.tenets = st.tenets.slice(0, mx);
-  }
-  const ms = Array.isArray(saved.modes) ? saved.modes.filter(x=>x==='sentence'||x==='paragraph') : [];
-  const es = Array.isArray(saved.extypes) ? saved.extypes.filter(x=>x==='upgrade'||x==='create') : [];
-  st.modes = new Set(ms);
-  st.extypes = new Set(es);
-  if(typeof saved.topic === 'string') st.topic = saved.topic;
+
+function draftLooksLikeBundledScript(s) {
+  if (!s || typeof s !== 'string' || s.length < 80) return false;
+  return (
+    s.indexOf('function undoClear') !== -1 &&
+    s.indexOf('function restoreCursor') !== -1 &&
+    (s.indexOf('w.document.write') !== -1 || s.indexOf('exportPrint') !== -1)
+  );
 }
-function applyPresetSnapshot(snap){
-  if(!snap||typeof snap!=='object') return;
-  const cols = snap.columns;
-  if(!Array.isArray(cols)||cols.length!==3) return;
-  cols.forEach((saved,i)=>assignColumnFromSaved(saved,i));
-  if(snap.fonts && typeof snap.fonts === 'object'){
-    const gf = clampFzPx(snap.fonts.gFz);
-    if(gf !== null){
-      gFz = gf;
-      const gv = document.getElementById('gfz-val');
-      if(gv) gv.textContent = String(gFz);
-      saveGfz();
-    }
-    [0,1,2].forEach(i=>{
-      const cf = clampFzPx(Array.isArray(snap.fonts.cFz) ? snap.fonts.cFz[i] : null);
-      const tf = clampFzPx(Array.isArray(snap.fonts.tFz) ? snap.fonts.tFz[i] : null);
-      if(cf !== null){ cFz[i] = cf; applyColFz(i); }
-      if(tf !== null){ tFz[i] = tf; applyTeacherFz(i); }
-    });
-  }
-  [0,1,2].forEach(i=>{
-    buildDrawer(i);
-    applyTeacherPanelMode(i);
-    updateSummary(i);
+
+function sanitizeStoredEditorHtml(html) {
+  if (!html || typeof html !== 'string') return '';
+  if (draftLooksLikeBundledScript(html)) return '';
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html;
+  tpl.content.querySelectorAll('script,style,iframe,object,embed').forEach(function(el) {
+    el.remove();
   });
-  syncGlobalBarFromCol0();
-  if(Array.isArray(snap.teacherDrafts)){
-    snap.teacherDrafts.forEach((txt,i)=>{
-      if(i > 2) return;
-      const ta = document.getElementById(`ta-${i}`);
-      if(!ta) return;
-      ta.value = txt != null ? String(txt) : '';
-      try{ localStorage.setItem(`aw_ta_${i}`, ta.value); }catch(e){}
-    });
-  }
-  if(snap.ui && typeof snap.ui === 'object'){
-    [0,1,2].forEach(i=>{
-      const op = snap.ui.drawersOpen && typeof snap.ui.drawersOpen[i] === 'boolean' ? snap.ui.drawersOpen[i] : null;
-      if(op !== null){
-        const d = document.getElementById(`drawer-${i}`);
-        const btn = document.querySelector(`[data-toggle="${i}"]`);
-        if(d && btn){
-          d.classList.toggle('open', op);
-          btn.classList.toggle('active', op);
-          try{ localStorage.setItem(`aw_drawer_${i}`, op ? '1' : '0'); }catch(e){}
-        }
-      }
-      const to = snap.ui.teacherOpen && typeof snap.ui.teacherOpen[i] === 'boolean' ? snap.ui.teacherOpen[i] : null;
-      if(to !== null){
-        const tb = document.getElementById(`tb-${i}`);
-        if(tb){
-          tb.classList.toggle('open', to);
-          try{ localStorage.setItem(`aw_teacher_open_${i}`, to ? '1' : '0'); }catch(e){}
-        }
-      }
-    });
-  }
-  scheduleSaveColState();
+  const plain = tpl.content.textContent || '';
+  if (draftLooksLikeBundledScript(plain)) return '';
+  return tpl.innerHTML;
 }
-function refreshPresetSelect(selectedId){
-  const sel = document.getElementById('preset-select');
-  const delBtn = document.getElementById('preset-delete');
-  if(!sel) return;
-  suppressPresetChange = true;
-  let presets = loadPresetsList().slice().sort((a,b)=>{
-    const ta = new Date(a.savedAt||0).getTime();
-    const tb = new Date(b.savedAt||0).getTime();
-    return tb - ta;
-  });
-  sel.innerHTML = '<option value="">— Load a saved setup —</option>';
-  presets.forEach(p=>{
-    if(!p||!p.id) return;
-    const opt = document.createElement('option');
-    opt.value = p.id;
-    const d = p.savedAt ? new Date(p.savedAt) : null;
-    const short = d && !isNaN(d.getTime())
-      ? d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
-      : '';
-    opt.textContent = short ? `${p.name} · ${short}` : (p.name || 'Untitled');
-    sel.appendChild(opt);
-  });
-  if(selectedId && [...sel.options].some(o=>o.value===selectedId)) sel.value = selectedId;
-  else sel.value = '';
-  if(delBtn) delBtn.disabled = !sel.value;
-  suppressPresetChange = false;
+
+function onEdit() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(analyseAndRender, 180);
 }
-function initPresets(){
-  const sel = document.getElementById('preset-select');
-  const btnSave = document.getElementById('preset-save');
-  const btnDel = document.getElementById('preset-delete');
-  if(!sel||!btnSave||!btnDel) return;
-  refreshPresetSelect();
-  sel.addEventListener('change',()=>{
-    if(suppressPresetChange) return;
-    const id = sel.value;
-    btnDel.disabled = !id;
-    if(!id) return;
-    const p = loadPresetsList().find(x=>x.id===id);
-    if(p && p.snapshot) applyPresetSnapshot(p.snapshot);
-  });
-  btnSave.addEventListener('click',()=>{
-    const name = prompt('Name this setup (all columns, fonts, teacher drafts, panel open/closed):','');
-    if(name === null) return;
-    const trimmed = name.trim();
-    if(!trimmed){ alert('Please enter a short name.'); return; }
-    let presets = loadPresetsList();
-    if(presets.length >= PRESET_MAX){
-      alert(`Maximum ${PRESET_MAX} saved setups. Delete one first.`);
+
+function eventTargetElement(ev) {
+  const n = ev.target;
+  return n.nodeType === 3 ? n.parentElement : n;
+}
+
+(function bindEditorLiveCheck() {
+  const editor = document.getElementById('editor');
+  if (!editor) return;
+  editor.addEventListener('paste', function(e) {
+    const text = (e.clipboardData && e.clipboardData.getData('text/plain')) || '';
+    if (text.length > MAX_PASTE_CHARS) {
+      e.preventDefault();
+      setDraftStatus('warn', 'That paste is too large — try a smaller chunk.');
       return;
     }
-    const id = 'p_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
-    presets.push({
-      id,
-      name: trimmed,
-      savedAt: new Date().toISOString(),
-      snapshot: capturePresetSnapshot()
-    });
-    savePresetsList(presets);
-    refreshPresetSelect(id);
-    btnDel.disabled = false;
+  }, true);
+  /* Note: skip beforeinput — it fires before DOM updates, so getRawText() would lag one keystroke. */
+  ['input', 'keyup', 'paste', 'cut', 'compositionend'].forEach(function(type) {
+    editor.addEventListener(type, onEdit);
   });
-  btnDel.addEventListener('click',()=>{
-    const id = sel.value;
-    if(!id) return;
-    if(!confirm('Delete this saved setup?')) return;
-    const next = loadPresetsList().filter(p=>p.id!==id);
-    savePresetsList(next);
-    refreshPresetSelect('');
+})();
+
+(function bindCoachFlagClicks() {
+  const editor = document.getElementById('editor');
+  if (!editor) return;
+  editor.addEventListener('click', function(e) {
+    const t = eventTargetElement(e);
+    if (!t || !t.closest) return;
+    const hit = t.closest('[data-msg]');
+    if (!hit || !editor.contains(hit)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    showPopover(e, hit);
+  }, true);
+})();
+
+(function bindGoalStepper() {
+  const minus = document.getElementById('goal-minus');
+  const plus = document.getElementById('goal-plus');
+  const hidden = document.getElementById('target-input');
+  const display = document.getElementById('target-display');
+  if (!minus || !plus || !hidden || !display) return;
+  function syncDisplay() {
+    display.textContent = hidden.value;
+    updateStats();
+    scheduleSaveDraft();
+  }
+  minus.addEventListener('click', function() {
+    let v = parseInt(hidden.value, 10) || 70;
+    hidden.value = String(Math.max(10, v - 10));
+    syncDisplay();
+  });
+  plus.addEventListener('click', function() {
+    let v = parseInt(hidden.value, 10) || 70;
+    hidden.value = String(Math.min(2000, v + 10));
+    syncDisplay();
+  });
+})();
+
+function getRawText() {
+  return document.getElementById('editor').innerText || '';
+}
+
+function tokenise(str) {
+  const tokens = [];
+  const re = /([a-zA-Z''\u2018\u2019]+)|([^a-zA-Z''\u2018\u2019]+)/g;
+  let m;
+  while ((m = re.exec(str)) !== null) {
+    tokens.push({ text: m[0], isWord: !!m[1], lower: m[1] ? m[1].toLowerCase().replace(/[\u2018\u2019]/g,"'") : null });
+  }
+  return tokens;
+}
+
+function splitSentences(text) {
+  return text.split(/(?<=[.!?…])\s+/).filter(s => s.trim().length > 0);
+}
+
+function analyseAndRender() {
+  const editor = document.getElementById('editor');
+  const sel = window.getSelection();
+  let cursorOffset = 0;
+  if (sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    const preRange = document.createRange();
+    preRange.selectNodeContents(editor);
+    preRange.setEnd(range.endContainer, range.endOffset);
+    cursorOffset = preRange.toString().length;
+  }
+
+  const raw = getRawText();
+  if (!raw.trim()) {
+    editor.innerHTML = '';
+    updateStats();
+    updateSidebar({});
+    clearIssueHeader();
+    setAlert('Start writing — your coach is cheering you on!', false);
+    scheduleSaveDraft();
+    return;
+  }
+
+  if (raw.length > MAX_ANALYSIS_CHARS) {
+    updateStats(raw);
+    updateSidebar({});
+    updateHeat({});
+    clearIssueHeader();
+    lastAlert = '';
+    setAlert('This draft is very long — live highlighting is paused until you shorten it.', true);
+    scheduleSaveDraft();
+    return;
+  }
+
+  const counts = { opener:0, verb:0, basic:0, adverb:0, filter:0, adj:0, abstract:0, repeat:0, stopword:0, rhythm:0 };
+  const alerts = [];
+
+  const sentences = splitSentences(raw);
+  const sentenceWords = sentences.map(s => {
+    const words = s.match(/[a-zA-Z''\u2018\u2019]+/g) || [];
+    return words.map(w => w.toLowerCase().replace(/[\u2018\u2019]/g,"'"));
+  });
+
+  const repeatPairs = new Set();
+  for (let i = 0; i < sentenceWords.length - 1; i++) {
+    const a = new Set(sentenceWords[i].filter(w => w.length > 3 && !STOP_WORDS.has(w) && !WEAK_VERBS.has(w)));
+    const b = sentenceWords[i+1].filter(w => w.length > 3 && !STOP_WORDS.has(w) && !WEAK_VERBS.has(w));
+    b.forEach(w => { if (a.has(w)) repeatPairs.add(w); });
+    const seen = new Set();
+    sentenceWords[i].forEach(w => {
+      if (w.length > 3 && !STOP_WORDS.has(w) && !WEAK_VERBS.has(w)) {
+        if (seen.has(w)) repeatPairs.add(w);
+        seen.add(w);
+      }
+    });
+  }
+  if (sentenceWords.length > 0) {
+    const seen = new Set();
+    sentenceWords[sentenceWords.length-1].forEach(w => {
+      if (w.length > 3 && !STOP_WORDS.has(w) && !WEAK_VERBS.has(w)) {
+        if (seen.has(w)) repeatPairs.add(w);
+        seen.add(w);
+      }
+    });
+  }
+
+  const tokens = tokenise(raw);
+  let html = '';
+  let sentenceStart = true;
+
+  const wordTokens = tokens.filter(t => t.isWord);
+  const tripletIndices = new Set();
+  if (issueScanEnabled.stopword) {
+    let run = 0, runStart = -1;
+    for (let i = 0; i < wordTokens.length; i++) {
+      if (STOP_WORDS.has(wordTokens[i].lower)) {
+        if (run === 0) runStart = i;
+        run++;
+        if (run >= 3) {
+          for (let j = runStart; j <= i; j++) tripletIndices.add(j);
+        }
+      } else { run = 0; runStart = -1; }
+    }
+  }
+
+  let wordIdx = 0;
+
+  for (let i = 0; i < tokens.length; i++) {
+    const tok = tokens[i];
+    if (!tok.isWord) {
+      if (/[.!?…]/.test(tok.text)) sentenceStart = true;
+      if (/\n/.test(tok.text)) sentenceStart = true;
+      html += escHtml(tok.text);
+      continue;
+    }
+    const w = tok.lower;
+    const orig = tok.text;
+
+    let classes = [];
+    let flagType = null;
+    let flagMsg = null;
+
+    if (issueScanEnabled.opener && sentenceStart && OPENERS.has(w)) {
+      classes.push('f-opener');
+      counts.opener++;
+      flagMsg = `Predictable start: "${orig}" — try starting with a verb, adverb, or noun phrase instead.`;
+      flagType = 'opener';
+    } else if (issueScanEnabled.verb && WEAK_VERBS.has(w)) {
+      classes.push('f-verb');
+      counts.verb++;
+      flagMsg = `Weak verb: "${orig}" — what is actually happening? Can you make the sentence DO something?`;
+      flagType = 'verb';
+    } else if (issueScanEnabled.basic && BASIC_VERBS.has(w) && !WEAK_VERBS.has(w)) {
+      classes.push('f-basic');
+      counts.basic++;
+      flagMsg = `Basic verb: "${orig}" — find the most precise, vivid verb you can. What does this action really look like?`;
+      flagType = 'basic';
+    } else if (issueScanEnabled.adverb && w.endsWith('ly') && w.length > 4 && !['only','early','daily','likely','lonely','lovely','nearly','really','truly','finally','family','rally','belly','holly','silly','bully','jelly','ally','tally','fully','duly','holy','poly','curly','burly','wily','oily'].includes(w)) {
+      classes.push('f-adverb');
+      counts.adverb++;
+      flagMsg = `Adverb: "${orig}" — delete it and upgrade the verb instead. The adverb confesses the verb wasn't good enough.`;
+      flagType = 'adverb';
+    } else if (issueScanEnabled.filter && FILTER_WORDS.has(w)) {
+      classes.push('f-filter');
+      counts.filter++;
+      flagMsg = `Filter word: "${orig}" — delete it and write the experience directly. Put the reader inside the moment.`;
+      flagType = 'filter';
+    } else if (issueScanEnabled.adj && WEAK_ADJS.has(w)) {
+      classes.push('f-adj');
+      counts.adj++;
+      flagMsg = `Weak adjective: "${orig}" — use a double or triple. Go beyond size and colour — texture, mood, temperature.`;
+      flagType = 'adj';
+    } else if (issueScanEnabled.abstract && ABSTRACT_NOUNS.has(w)) {
+      classes.push('f-abstract');
+      counts.abstract++;
+      flagMsg = `Abstract noun: "${orig}" — show the physical evidence instead. What does this look like in the real world?`;
+      flagType = 'abstract';
+    }
+
+    if (issueScanEnabled.repeat && repeatPairs.has(w) && !STOP_WORDS.has(w)) {
+      classes.push('f-repeat');
+      counts.repeat++;
+      if (!flagMsg) {
+        flagMsg = `Repeated word: "${orig}" — use a synonym, pronoun, or restructure the sentence.`;
+        flagType = 'repeat';
+      }
+    }
+
+    if (issueScanEnabled.stopword && tripletIndices.has(wordIdx)) {
+      classes.push('f-stopword');
+      if (!classes.includes('f-repeat')) counts.stopword++;
+      if (!flagMsg) {
+        flagMsg = `Stop word cluster — three or more near-meaningless words in a row. Rewrite for density.`;
+        flagType = 'stopword';
+      }
+    }
+
+    if (flagMsg && issueScanEnabled[flagType]) alerts.push({ type: flagType, msg: flagMsg });
+
+    if (classes.length > 0) {
+      const safeMsg = (flagMsg||'').replace(/"/g,'&quot;');
+      html += `<span class="coach-flag ${classes.join(' ')}" data-type="${flagType||''}" data-msg="${safeMsg}">${escHtml(orig)}</span>`;
+    } else {
+      html += escHtml(orig);
+    }
+
+    if (sentenceStart && /[a-zA-Z]/.test(orig)) sentenceStart = false;
+    wordIdx++;
+  }
+
+  editor.innerHTML = html;
+  restoreCursor(editor, cursorOffset);
+
+  if (issueScanEnabled.rhythm && sentenceWords.length >= 3) {
+    const lengths = sentenceWords.map(s => s.length).filter(l => l > 0);
+    const mean = lengths.reduce((a,b)=>a+b,0) / lengths.length;
+    const variance = lengths.reduce((a,b)=>a+Math.pow(b-mean,2),0) / lengths.length;
+    const stddev = Math.sqrt(variance);
+    if (stddev < 3.5) {
+      counts.rhythm = 1;
+      alerts.push({ type:'rhythm', msg:`Flat sentence rhythm — all your sentences are a similar length (avg ${Math.round(mean)} words). Mix short punchers with longer flowing sentences.` });
+    }
+  }
+
+  updateStats(raw);
+  updateSidebar(counts);
+  updateHeat(counts);
+
+  if (alerts.length > 0) {
+    const last = alerts[alerts.length - 1];
+    if (last.msg !== lastAlert) {
+      lastAlert = last.msg;
+      setAlert(last.msg, true, false, last.type);
+    }
+  } else {
+    lastAlert = '';
+    const total = Object.values(counts).reduce((a,b)=>a+b,0);
+    const anyScanOn = ISSUE_KEYS.some(function(k) { return issueScanEnabled[k]; });
+    if (total === 0 && raw.trim().length > 10) {
+      if (anyScanOn) {
+        setAlert('Nice — no issues detected. Keep going!', false, true);
+      } else {
+        setAlert('Turn on at least one issue type in the sidebar to scan your draft.', false);
+      }
+    } else {
+      setAlert('Start writing — your coach is cheering you on!', false);
+    }
+  }
+  scheduleSaveDraft();
+}
+
+function setAlert(msg, flagged, clear, issueType) {
+  const bar = document.getElementById('alert-bar');
+  const simple = document.getElementById('alert-simple');
+  const structured = document.getElementById('alert-structured');
+  const titleEl = document.getElementById('alert-top-title');
+  const tipEl = document.getElementById('alert-top-tip');
+  if (!simple || !structured || !titleEl || !tipEl) {
+    bar.textContent = msg;
+    bar.className = flagged ? 'flagged' : (clear ? 'clear' : '');
+    return;
+  }
+  if (flagged && issueType) {
+    const label = TYPE_LABELS[issueType] || issueType;
+    structured.hidden = false;
+    simple.hidden = true;
+    titleEl.textContent = label;
+    tipEl.textContent = cleanCoachMsg(msg);
+    bar.className = 'flagged alert-mode-issue';
+    return;
+  }
+  structured.hidden = true;
+  simple.hidden = false;
+  simple.textContent = msg;
+  bar.className = flagged ? 'flagged' : (clear ? 'clear' : '');
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fallbackCopyText(t) {
+  const ta = document.createElement('textarea');
+  ta.value = t;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+  } finally {
+    document.body.removeChild(ta);
+  }
+}
+
+function exportCopy() {
+  const t = getRawText();
+  if (!t.trim()) {
+    const el = document.getElementById('draft-status');
+    if (el) {
+      clearTimeout(draftStatusClearTimer);
+      el.textContent = 'Nothing to copy';
+      el.className = 'status-warn';
+      draftStatusClearTimer = setTimeout(function() {
+        el.textContent = '';
+        el.className = '';
+      }, 2000);
+    }
+    return;
+  }
+  function done() {
+    setDraftStatus('copy');
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(done).catch(function() {
+      fallbackCopyText(t);
+      done();
+    });
+  } else {
+    fallbackCopyText(t);
+    done();
+  }
+}
+
+function exportDownload() {
+  const t = getRawText();
+  if (!t.trim()) return;
+  const blob = new Blob([t], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'my-writing.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportPrint() {
+  const t = getRawText();
+  if (!t.trim()) return;
+  const w = window.open('', '_blank');
+  if (!w) return;
+  const lt = '<';
+  const bodyHtml =
+    lt +
+    'pre style="font-family:system-ui,sans-serif;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;margin:0;padding:24px;">' +
+    escHtml(t) +
+    lt +
+    '/pre>';
+  const docHtml =
+    '<!DOCTYPE html><html><head><meta charset="utf-8"><title>My writing</title>' +
+    lt +
+    '/head><body>' +
+    bodyHtml +
+    lt +
+    '/body>' +
+    lt +
+    '/html>';
+  w.document.write(docHtml);
+  w.document.close();
+  w.focus();
+  w.print();
+  try { w.close(); } catch (e) {}
+}
+
+function undoClear() {
+  if (!lastClearedSnapshot) return;
+  const ed = document.getElementById('editor');
+  ed.innerHTML = lastClearedSnapshot.html;
+  const hidden = document.getElementById('target-input');
+  const display = document.getElementById('target-display');
+  hidden.value = lastClearedSnapshot.goal;
+  display.textContent = lastClearedSnapshot.goal;
+  lastClearedSnapshot = null;
+  const btn = document.getElementById('btn-undo-clear');
+  if (btn) btn.hidden = true;
+  analyseAndRender();
+}
+
+function restoreCursor(el, offset) {
+  const range = document.createRange();
+  const sel = window.getSelection();
+  let charCount = 0;
+  let found = false;
+  function traverse(node) {
+    if (found) return;
+    if (node.nodeType === 3) {
+      const next = charCount + node.length;
+      if (next >= offset) {
+        range.setStart(node, offset - charCount);
+        range.collapse(true);
+        found = true;
+      }
+      charCount = next;
+    } else {
+      for (const child of node.childNodes) traverse(child);
+    }
+  }
+  traverse(el);
+  if (!found) {
+    range.selectNodeContents(el);
+    range.collapse(false);
+  }
+  sel.removeAllRanges();
+  sel.addRange(range);
+  el.focus({ preventScroll: true });
+}
+
+function updateStats(raw) {
+  raw = raw || getRawText();
+  const words = (raw.match(/[a-zA-Z''\u2018\u2019]+/g) || []).length;
+  const target = parseInt(document.getElementById('target-input').value, 10) || 70;
+  document.getElementById('wc').textContent = words;
+  const pct = Math.min(100, Math.round(words / target * 100));
+  const bar = document.getElementById('progress-bar');
+  bar.style.width = pct + '%';
+  if (pct >= 100) bar.style.background = 'linear-gradient(90deg, #34d399, #059669)';
+  else if (pct >= 60) bar.style.background = 'linear-gradient(90deg, var(--accent-soft), var(--accent))';
+  else bar.style.background = 'linear-gradient(90deg, #c4b5fd, var(--accent))';
+}
+
+function updateSidebar(counts) {
+  const keys = ['opener','verb','basic','adverb','filter','adj','abstract','repeat','stopword','rhythm'];
+  keys.forEach(k => {
+    const c = counts[k] || 0;
+    const el = document.getElementById('sc-' + k);
+    const item = document.getElementById('si-' + k);
+    if (el) el.textContent = c > 0 ? c : '—';
+    if (item) {
+      item.classList.toggle('active', c > 0);
+      if (c === 0) item.classList.remove('issue-selected');
+    }
   });
 }
 
-// font sizes
-let gFz = parseInt(localStorage.getItem('aw_gfz')||'21');
-const cFz  = [0,1,2].map(i=>parseInt(localStorage.getItem(`aw_cfz_${i}`)||'18'));
-const tFz  = [0,1,2].map(i=>parseInt(localStorage.getItem(`aw_tfz_${i}`)||'21'));
+function updateHeat(counts) {
+  const total = Object.values(counts).reduce((a,b)=>a+b,0);
+  const raw = getRawText();
+  const words = (raw.match(/[a-zA-Z]+/g)||[]).length || 1;
+  const density = total / words;
+  const pct = Math.min(100, Math.round(density / 0.35 * 100));
+  document.getElementById('heat-slider').style.left = pct + '%';
+}
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
-let collapseTopBar = ()=>{};
-document.addEventListener('DOMContentLoaded', ()=>{
-  initApiKey();
-  initTheme();
-  initTopbarCollapse();
-  initGlobalFz();
-  initGlobalBar();
-  initPresets();
-  [0,1,2].forEach(i=>{
-    buildDrawer(i);
-    applyColFz(i);
-    applyTeacherFz(i);
-    updateSummary(i);
-  });
-  [0,1,2].forEach(i=>{
-    const d = document.getElementById(`drawer-${i}`);
-    const ic = document.querySelector(`[data-toggle="${i}"]`);
-    const stored = localStorage.getItem(`aw_drawer_${i}`);
-    const open = stored===null ? true : stored==='1';
-    d.classList.toggle('open',open);
-    ic.classList.toggle('active',open);
-  });
-  initTeacherPanels();
-  initRegenButtons();
-  initColStripFz();
-  document.getElementById('btn-gen').addEventListener('click', generateAll);
+function clearEditor() {
+  const ed = document.getElementById('editor');
+  if (!getRawText().trim()) return;
+  if (!confirm('Clear all writing?')) return;
+  lastClearedSnapshot = {
+    html: ed.innerHTML,
+    goal: document.getElementById('target-input').value
+  };
+  ed.innerHTML = '';
+  updateStats('');
+  updateSidebar({});
+  updateHeat({});
+  clearIssueHeader();
+  setAlert('Start writing — your coach is cheering you on!', false);
+  lastAlert = '';
+  const btn = document.getElementById('btn-undo-clear');
+  if (btn) btn.hidden = false;
+  scheduleSaveDraft();
+}
 
-  // drawer toggles
-  document.querySelectorAll('[data-toggle]').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const i = parseInt(btn.dataset.toggle);
-      const d = document.getElementById(`drawer-${i}`);
-      const open = d.classList.toggle('open');
-      btn.classList.toggle('active', open);
-      try{ localStorage.setItem(`aw_drawer_${i}`,open?'1':'0'); }catch(e){}
-    });
-  });
+let popoverHideTimer = null;
+
+function setIssueHeader(type, fullMsg) {
+  const titleEl = document.getElementById('sidebar-head-issue-title');
+  const msgEl = document.getElementById('sidebar-head-issue-msg');
+  const label = TYPE_LABELS[type] || type || 'Issue';
+  const tip = cleanCoachMsg(fullMsg);
+  titleEl.textContent = label;
+  titleEl.classList.remove('is-placeholder');
+  msgEl.textContent = tip;
+  msgEl.classList.add('visible');
+}
+
+function clearIssueHeader() {
+  const titleEl = document.getElementById('sidebar-head-issue-title');
+  const msgEl = document.getElementById('sidebar-head-issue-msg');
+  titleEl.textContent = 'Tap a highlighted word';
+  titleEl.classList.add('is-placeholder');
+  msgEl.textContent = '';
+  msgEl.classList.remove('visible');
+  clearIssueMenuSelection();
+}
+
+function showPopover(e, el) {
+  e.stopPropagation();
+  const msg = el.getAttribute('data-msg');
+  const type = el.getAttribute('data-type');
+  if (!msg) return;
+  setIssueMenuHighlight(type);
+  setIssueHeader(type, msg);
+  setAlert(msg, true, false, type);
+  const pop = document.getElementById('popover');
+  document.getElementById('popover-type').textContent = TYPE_LABELS[type] || type;
+  const cleanMsg = cleanCoachMsg(msg);
+  document.getElementById('popover-msg').textContent = cleanMsg;
+  pop.style.left = '0px'; pop.style.top = '0px';
+  pop.classList.add('visible');
+  const rect = el.getBoundingClientRect();
+  const pw = pop.offsetWidth; const ph = pop.offsetHeight;
+  let left = rect.left + rect.width / 2 - pw / 2;
+  let top = rect.top - ph - 12;
+  left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+  if (top < 8) top = rect.bottom + 12;
+  pop.style.left = left + 'px'; pop.style.top = top + 'px';
+  clearTimeout(popoverHideTimer);
+  popoverHideTimer = setTimeout(function() { hidePopover(false); }, 4000);
+}
+
+function hidePopover(clearHeader) {
+  document.getElementById('popover').classList.remove('visible');
+  if (clearHeader !== false) {
+    clearIssueHeader();
+    setAlert('Start writing — your coach is cheering you on!', false);
+  }
+}
+
+document.addEventListener('click', function(e) {
+  const el = eventTargetElement(e);
+  if (!el || !el.closest) return;
+  if (!el.closest('[data-msg]')) hidePopover(true);
+  const expl = document.getElementById('issue-explainer');
+  if (expl && expl.classList.contains('visible')) {
+    if (!el.closest('#issue-explainer') && !el.closest('#issue-list')) {
+      hideIssueExplainer();
+    }
+  }
 });
 
-// ── THEME (dark default + student-portal style light) ─────────────────────────
-function initTheme(){
-  const root = document.documentElement;
-  const btn = document.getElementById('btn-theme');
-  const KEY = 'aw_theme';
-  function paint(){
-    const light = root.getAttribute('data-theme') === 'light';
-    btn.setAttribute('aria-pressed', light ? 'true' : 'false');
-    btn.querySelector('.th-ico').textContent = light ? '🌙' : '☀️';
-    btn.querySelector('.th-txt').textContent = light ? 'Dark' : 'Light';
-    btn.title = light ? 'Switch to dark mode' : 'Switch to light mode (lavender / violet)';
-  }
-  function apply(theme){
-    root.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
-    try{ localStorage.setItem(KEY, root.getAttribute('data-theme')); }catch(e){}
-    paint();
-  }
-  let initial = 'dark';
-  try{
-    const s = localStorage.getItem(KEY);
-    if(s === 'light' || s === 'dark') initial = s;
-  }catch(e){}
-  apply(initial);
-  btn.addEventListener('click', ()=>{
-    apply(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
-  });
+function toggleTheme() {
+  document.body.classList.toggle('theme-night');
+  document.getElementById('theme-btn').textContent = document.body.classList.contains('theme-night') ? '☽' : '☀';
+  document.getElementById('theme-btn').title = document.body.classList.contains('theme-night') ? 'Switch to daytime' : 'Toggle cozy night mode';
+  scheduleSaveDraft();
 }
 
-// ── COLLAPSIBLE TOP HEADER ────────────────────────────────────────────────────
-function initTopbarCollapse(){
-  const shell = document.getElementById('topbar-shell');
-  const btn = document.getElementById('btn-topbar-toggle');
-  const chev = btn.querySelector('.tbb-chevron');
-  const lbl = btn.querySelector('.tbb-label');
-  function sync(collapsed){
-    shell.classList.toggle('collapsed',collapsed);
-    btn.setAttribute('aria-expanded',collapsed?'false':'true');
-    chev.textContent=collapsed?'▼':'▲';
-    lbl.textContent=collapsed?'Show controls':'Hide controls';
-    localStorage.setItem('aw_topbar_collapsed',collapsed?'1':'0');
-  }
-  btn.addEventListener('click',()=>sync(!shell.classList.contains('collapsed')));
-  collapseTopBar=()=>sync(true);
-  sync(localStorage.getItem('aw_topbar_collapsed')==='1');
-}
+(function bindDraftToolbar() {
+  const bc = document.getElementById('btn-copy');
+  const bd = document.getElementById('btn-download');
+  const bp = document.getElementById('btn-print');
+  const bu = document.getElementById('btn-undo-clear');
+  if (bc) bc.addEventListener('click', exportCopy);
+  if (bd) bd.addEventListener('click', exportDownload);
+  if (bp) bp.addEventListener('click', exportPrint);
+  if (bu) bu.addEventListener('click', undoClear);
+})();
 
-// ── API KEY ───────────────────────────────────────────────────────────────────
-function initApiKey(){
-  const inp = document.getElementById('api-key');
-  const st  = document.getElementById('api-st');
-  const saved = localStorage.getItem('aw_key');
-  if(saved){inp.value=saved;setSt(saved.startsWith('sk-ant')&&saved.length>20);}
-  inp.addEventListener('input',()=>{
-    localStorage.setItem('aw_key',inp.value.trim());
-    setSt(inp.value.trim().startsWith('sk-ant')&&inp.value.trim().length>20);
-  });
-  function setSt(ok){st.textContent=ok?'✓ ready':'not set';st.className=ok?'api-ok':'api-no';}
-}
+loadIssueScanPrefs();
+syncIssueScanCheckboxes();
 
-// ── FONT SIZE — GLOBAL ────────────────────────────────────────────────────────
-function initGlobalFz(){
-  const val = document.getElementById('gfz-val');
-  val.textContent = gFz;
-  document.getElementById('gfz-up').addEventListener('click',()=>{gFz=Math.min(60,gFz+1);saveGfz();pushGlobal();});
-  document.getElementById('gfz-dn').addEventListener('click',()=>{gFz=Math.max(15,gFz-1);saveGfz();pushGlobal();});
-  document.getElementById('gfz-reset').addEventListener('click',()=>{gFz=21;saveGfz();pushGlobal(true);});
-}
-function pushGlobal(reset){
-  document.getElementById('gfz-val').textContent=gFz;
-  [0,1,2].forEach(i=>{
-    if(reset) tFz[i]=21;
-    else tFz[i]=gFz;
-    applyTeacherFz(i);
-  });
-}
-function saveGfz(){localStorage.setItem('aw_gfz',gFz);}
-
-// ── GLOBAL QUICK BAR (syncs all columns; each column keeps its year band) ─────
-let gbTopicDebounce;
-function initGlobalBar(){
-  const tRow = document.getElementById('gb-t-row');
-  TENETS.forEach(t=>{
-    const b = mk('button','gb-ten');
-    b.type='button';
-    b.dataset.tid=String(t.id);
-    b.textContent='T'+t.id;
-    b.title=t.n;
-    b.addEventListener('click',()=>{b.classList.toggle('on');applyGlobalFromBar();});
-    tRow.appendChild(b);
-  });
-  document.querySelectorAll('[data-gb-type]').forEach(chip=>{
-    chip.addEventListener('click',()=>{
-      document.querySelectorAll('[data-gb-type]').forEach(c=>c.classList.remove('on'));
-      chip.classList.add('on');
-      const nar = chip.dataset.gbType==='narrative';
-      document.getElementById('gb-stage-wrap').style.display = nar?'':'none';
-      applyGlobalFromBar();
-    });
-  });
-  document.getElementById('gb-stage').addEventListener('change',applyGlobalFromBar);
-  document.querySelectorAll('[data-gb-mode]').forEach(chip=>{
-    chip.addEventListener('click',()=>{
-      const on = chip.classList.contains('on');
-      if(on){
-        if(document.querySelectorAll('[data-gb-mode].on').length<=1)return;
-        chip.classList.remove('on');
-      } else chip.classList.add('on');
-      applyGlobalFromBar();
-    });
-  });
-  document.querySelectorAll('[data-gb-ex]').forEach(chip=>{
-    chip.addEventListener('click',()=>{
-      const on = chip.classList.contains('on');
-      if(on){
-        if(document.querySelectorAll('[data-gb-ex].on').length<=1)return;
-        chip.classList.remove('on');
-      } else chip.classList.add('on');
-      applyGlobalFromBar();
-    });
-  });
-  const topInp = document.getElementById('gb-topic');
-  topInp.addEventListener('input',()=>{
-    topInp.classList.toggle('gb-topic-on',!!topInp.value.trim());
-    clearTimeout(gbTopicDebounce);
-    gbTopicDebounce = setTimeout(applyGlobalFromBar,140);
-  });
-  syncGlobalBarFromCol0();
-}
-function syncGlobalBarFromCol0(){
-  const st = colState[0];
-  document.querySelectorAll('[data-gb-type]').forEach(c=>c.classList.toggle('on',c.dataset.gbType===st.type));
-  if(!document.querySelector('[data-gb-type].on')){
-    const fb = document.querySelector('[data-gb-type="narrative"]');
-    if(fb) fb.classList.add('on');
-  }
-  document.getElementById('gb-stage').value = st.stage;
-  document.getElementById('gb-stage-wrap').style.display = st.type==='narrative'?'':'none';
-  document.querySelectorAll('[data-gb-mode]').forEach(c=>c.classList.toggle('on',st.modes.has(c.dataset.gbMode)));
-  document.querySelectorAll('[data-gb-ex]').forEach(c=>c.classList.toggle('on',st.extypes.has(c.dataset.gbEx)));
-  document.querySelectorAll('.gb-ten').forEach(b=>{
-    const id = parseInt(b.dataset.tid,10);
-    b.classList.toggle('on',st.tenets.includes(id));
-  });
-  const ti = document.getElementById('gb-topic');
-  ti.value = st.topic||'';
-  ti.classList.toggle('gb-topic-on',!!ti.value.trim());
-}
-function applyGlobalFromBar(){
-  const typeEl = document.querySelector('[data-gb-type].on');
-  const type = typeEl ? typeEl.dataset.gbType : 'narrative';
-  const stage = document.getElementById('gb-stage').value;
-  const topic = document.getElementById('gb-topic').value;
-  const modes = new Set();
-  document.querySelectorAll('[data-gb-mode].on').forEach(el=>modes.add(el.dataset.gbMode));
-  const extypes = new Set();
-  document.querySelectorAll('[data-gb-ex].on').forEach(el=>extypes.add(el.dataset.gbEx));
-  const tenetIds = TENETS.map(t=>t.id).filter(id=>
-    document.querySelector(`.gb-ten[data-tid="${id}"]`)?.classList.contains('on')
-  );
-  [0,1,2].forEach(i=>{
-    colState[i].type = type;
-    colState[i].stage = stage;
-    colState[i].topic = topic;
-    colState[i].modes = new Set(modes);
-    colState[i].extypes = new Set(extypes);
-    const mx = maxTenetsForYear(colState[i].year);
-    colState[i].tenets = tenetIds.slice(0,mx);
-    buildDrawer(i);
-    updateSummary(i);
-    applyTeacherPanelMode(i);
-  });
-}
-
-// ── FONT SIZE — COLUMN ────────────────────────────────────────────────────────
-function applyColFz(i){
-  document.getElementById(`col-${i}`).style.setProperty('--col-fz',cFz[i]+'px');
-  localStorage.setItem(`aw_cfz_${i}`,cFz[i]);
-}
-function applyTeacherFz(i){
-  document.getElementById(`ta-${i}`).style.fontSize = tFz[i]+'px';
-  document.querySelectorAll(`.tfz-val[data-col="${i}"]`).forEach(el=>el.textContent=tFz[i]);
-  localStorage.setItem(`aw_tfz_${i}`,tFz[i]);
-}
-function applyTeacherPanelMode(i){
-  const hasPara = colState[i].modes.has('paragraph');
-  document.getElementById(`tp-${i}`).classList.toggle('teacher-para',hasPara);
-}
-
-// ── TEACHER PANELS ────────────────────────────────────────────────────────────
-let taSaveTimers={};
-function scheduleSaveTeacherTa(i,val){
-  clearTimeout(taSaveTimers[i]);
-  taSaveTimers[i]=setTimeout(()=>{
-    try{ localStorage.setItem(`aw_ta_${i}`,val); }catch(e){}
-  },380);
-}
-function initTeacherPanels(){
-  document.querySelectorAll('.teacher-header').forEach(h=>{
-    const i = h.dataset.tp;
-    const tb = document.getElementById(`tb-${i}`);
-    if(localStorage.getItem(`aw_teacher_open_${i}`)==='1') tb.classList.add('open');
-    h.addEventListener('click',()=>{
-      tb.classList.toggle('open');
-      try{ localStorage.setItem(`aw_teacher_open_${i}`,tb.classList.contains('open')?'1':'0'); }catch(e){}
-    });
-  });
-  document.querySelectorAll('.tfz-up').forEach(b=>b.addEventListener('click',()=>{
-    const i=parseInt(b.dataset.col);tFz[i]=Math.min(60,tFz[i]+1);applyTeacherFz(i);
-  }));
-  document.querySelectorAll('.tfz-dn').forEach(b=>b.addEventListener('click',()=>{
-    const i=parseInt(b.dataset.col);tFz[i]=Math.max(15,tFz[i]-1);applyTeacherFz(i);
-  }));
-  document.querySelectorAll('.teacher-ta').forEach(ta=>{
-    const i = parseInt(ta.id.replace(/\D/g,''),10);
-    try{
-      const v = localStorage.getItem(`aw_ta_${i}`);
-      if(v!=null) ta.value = v;
-    }catch(e){}
-    ta.addEventListener('input',()=>scheduleSaveTeacherTa(i,ta.value));
-  });
-}
-
-// ── COLUMN STRIP FONT (exercise body only; controls live in header) ────────────
-function initColStripFz(){
-  document.querySelectorAll('.cfz-dn').forEach(b=>{
-    b.addEventListener('click',()=>{
-      const i=parseInt(b.dataset.col,10);
-      cFz[i]=Math.max(15,cFz[i]-1);
-      applyColFz(i);
-    });
-  });
-  document.querySelectorAll('.cfz-up').forEach(b=>{
-    b.addEventListener('click',()=>{
-      const i=parseInt(b.dataset.col,10);
-      cFz[i]=Math.min(60,cFz[i]+1);
-      applyColFz(i);
-    });
-  });
-}
-
-// ── REGEN ─────────────────────────────────────────────────────────────────────
-function initRegenButtons(){
-  document.querySelectorAll('.btn-regen').forEach(b=>{
-    b.addEventListener('click',()=>{
-      if(!validateApi()) return;
-      generateCol(parseInt(b.dataset.col));
-    });
-  });
-}
-
-// ── BUILD DRAWER ──────────────────────────────────────────────────────────────
-function buildDrawer(i){
-  const st = colState[i];
-  const di = document.getElementById(`di-${i}`);
-  di.innerHTML = '';
-
-  // Row 1: year, type, stage, topic
-  const r1 = mk('div','dr-row');
-
-  // year
-  const yf = mk('div','dr-field');
-  yf.appendChild(mkLbl('Year Level'));
-  const ySel = mkSel([
-    ['yr2-4','Yr 2–4'],['yr5-6','Yr 5–6'],['yr7-8','Yr 7–8'],['yr9-12','Yr 9–12']
-  ], st.year);
-  ySel.addEventListener('change',()=>{
-    st.year=ySel.value;
-    const mx=maxTenetsForYear(st.year);
-    if(st.tenets.length>mx) st.tenets=st.tenets.slice(0,mx);
-    buildDrawer(i);
-    updateSummary(i);
-  });
-  yf.appendChild(ySel); r1.appendChild(yf);
-
-  // type
-  const tf = mk('div','dr-field');
-  tf.appendChild(mkLbl('Writing Type'));
-  const tSel = mkSel([
-    ['narrative','Narrative'],['persuasive','Persuasive'],['analytical','Analytical']
-  ], st.type);
-  const stageFld = mk('div','dr-field');
-  tSel.addEventListener('change',()=>{
-    st.type=tSel.value;
-    stageFld.style.display = st.type==='narrative'?'flex':'none';
-    updateSummary(i);
-  });
-  tf.appendChild(tSel); r1.appendChild(tf);
-
-  // stage
-  stageFld.style.display = st.type==='narrative'?'flex':'none';
-  stageFld.style.flexDirection='column'; stageFld.style.gap='5px';
-  stageFld.appendChild(mkLbl('Story Stage'));
-  const sgSel = mkSel([
-    ['who','WHO'],['where','WHERE'],['what','WHAT'],['tension','TENSION'],
-    ['complication','COMPLICATION'],['climax','CLIMAX'],['resolution','RESOLUTION'],['flashback','FLASHBACK']
-  ], st.stage);
-  sgSel.addEventListener('change',()=>{st.stage=sgSel.value;updateSummary(i);});
-  stageFld.appendChild(sgSel); r1.appendChild(stageFld);
-
-  // topic
-  const topFld = mk('div','dr-field');
-  topFld.appendChild(mkLbl('Topic / Theme'));
-  const topInp = mk('input','dr-input');
-  topInp.type='text'; topInp.placeholder='storm, heist, lost dog...';
-  topInp.value = st.topic||'';
-  const syncTopicInp = ()=>{ topInp.classList.toggle('dr-input-on', !!topInp.value.trim()); };
-  syncTopicInp();
-  topInp.addEventListener('input',()=>{ st.topic=topInp.value; syncTopicInp(); updateSummary(i); });
-  topFld.appendChild(topInp); r1.appendChild(topFld);
-  di.appendChild(r1);
-
-  // Row 2: mode/type chips
-  const r2 = mk('div','dr-row');
-  const mf = mk('div','dr-field');
-  mf.appendChild(mkLbl('Mode'));
-  const mRow = mk('div'); mRow.style.display='flex'; mRow.style.gap='6px'; mRow.style.flexWrap='wrap';
-  [['sentence','Sentence'],['paragraph','Paragraph']].forEach(([v,l])=>{
-    const c=mk('span','mode-chip');c.textContent=l;
-    if(st.modes.has(v))c.classList.add('on');
-    c.addEventListener('click',()=>{toggleSet(st.modes,v,c);applyTeacherPanelMode(i);scheduleSaveColState();});
-    mRow.appendChild(c);
-  });
-  mf.appendChild(mRow); r2.appendChild(mf);
-  applyTeacherPanelMode(i);
-
-  const ef = mk('div','dr-field');
-  ef.appendChild(mkLbl('Exercise Type'));
-  const eRow = mk('div'); eRow.style.display='flex'; eRow.style.gap='6px'; eRow.style.flexWrap='wrap';
-  [['upgrade','Upgrade'],['create','Create']].forEach(([v,l])=>{
-    const c=mk('span','mode-chip');c.textContent=l;
-    if(st.extypes.has(v))c.classList.add('on');
-    c.addEventListener('click',()=>{toggleSet(st.extypes,v,c);scheduleSaveColState();});
-    eRow.appendChild(c);
-  });
-  ef.appendChild(eRow); r2.appendChild(ef);
-  di.appendChild(r2);
-
-  // Row 3: tenets
-  const tMax = maxTenetsForYear(st.year);
-  if(st.tenets.length>tMax) st.tenets=st.tenets.slice(0,tMax);
-  const r3 = mk('div','dr-field');
-  const tNote = mk('span','tenet-note'); tNote.id=`tnote-${i}`;
-  tNote.textContent = st.tenets.length+' selected (max '+tMax+')';
-  const tHead = mk('div'); tHead.style.display='flex'; tHead.style.justifyContent='space-between';
-  const tLbl = mkLbl('Tenets'); tHead.append(tLbl,tNote); r3.appendChild(tHead);
-
-  const tGrid = mk('div','tenet-grid');
-  // two columns of chips
-  const tCols = mk('div'); tCols.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:5px;';
-  TENETS.forEach(t=>{
-    const c=mk('button','tenet-chip');
-    c.textContent=`T${t.id} — ${t.n}`;
-    if(st.tenets.includes(t.id))c.classList.add('on');
-    if(!st.tenets.includes(t.id)&&st.tenets.length>=tMax)c.classList.add('disabled');
-    c.addEventListener('click',()=>{
-      if(st.tenets.includes(t.id)){
-        st.tenets=st.tenets.filter(x=>x!==t.id);
-        c.classList.remove('on');
-      } else {
-        if(st.tenets.length>=tMax)return;
-        st.tenets.push(t.id);c.classList.add('on');
-      }
-      tNote.textContent=st.tenets.length+' selected (max '+tMax+')';
-      updateSummary(i);
-      // update disabled state
-      tCols.querySelectorAll('.tenet-chip').forEach(ch=>{
-        const tid=parseInt(ch.textContent.match(/T(\d+)/)[1]);
-        if(!st.tenets.includes(tid)){
-          ch.classList.toggle('disabled',st.tenets.length>=tMax);
-        }
-      });
-    });
-    tCols.appendChild(c);
-  });
-  tGrid.appendChild(tCols);
-  r3.appendChild(tGrid);
-  di.appendChild(r3);
-
-  // Generate button
-  const gBtn = mk('button','dr-gen-btn');
-  gBtn.textContent=`⚡ Generate Col ${i+1}`;
-  gBtn.addEventListener('click',()=>{if(!validateApi())return;generateCol(i);});
-  di.appendChild(gBtn);
-  if(i===0) syncGlobalBarFromCol0();
-}
-
-// ── SUMMARY LINE ─────────────────────────────────────────────────────────────
-function updateSummary(i){
-  const st = colState[i];
-  const yr = {
-    'yr2-4':'Yr 2–4','yr5-6':'Yr 5–6','yr7-8':'Yr 7–8','yr9-12':'Yr 9–12'
-  }[st.year];
-  const type = st.type.charAt(0).toUpperCase()+st.type.slice(1);
-  const stage = st.type==='narrative' ? ` · ${st.stage.toUpperCase()}` : '';
-  const tn = st.tenets.length ? ' · T'+st.tenets.join(' T') : ' · no tenets';
-  const top = st.topic ? ` · "${st.topic}"` : '';
-  document.getElementById(`sum-${i}`).textContent = `${yr} · ${type}${stage}${tn}${top}`;
-  scheduleSaveColState();
-}
-
-// ── GENERATE ──────────────────────────────────────────────────────────────────
-function closeDrawer(i){
-  const d=document.getElementById(`drawer-${i}`);
-  const btn=document.querySelector(`[data-toggle="${i}"]`);
-  if(d)d.classList.remove('open');
-  if(btn)btn.classList.remove('active');
-}
-function closeAllDrawers(){[0,1,2].forEach(closeDrawer);}
-
-function generateAll(){
-  if(!validateApi()) return;
-  closeAllDrawers();
-  collapseTopBar();
-  [0,1,2].forEach(i=>generateCol(i));
-}
-
-async function generateCol(idx){
-  const apiKey = document.getElementById('api-key').value.trim();
-  const st     = colState[idx];
-
-  if(!st.modes.size){
-    setColError(idx,'Select at least one mode (Sentence and/or Paragraph) in ⚙ settings.');return;
-  }
-  if(!st.extypes.size){
-    setColError(idx,'Select at least one exercise type (Upgrade and/or Create) in ⚙ settings.');return;
-  }
-  if(!st.tenets.length){
-    setColError(idx,'Select at least one tenet in ⚙ settings.');return;
-  }
-
-  closeDrawer(idx);
-
-  const yearLabel = {
-    'yr2-4':'Year 2–4 (age 7–10)',
-    'yr5-6':'Year 5–6 (age 10–12)',
-    'yr7-8':'Year 7–8 (age 12–14)',
-    'yr9-12':'Year 9–12 (age 14–18)'
-  }[st.year];
-
-  const tenetList = st.tenets.map(id=>{
-    const t=TENETS.find(x=>x.id===id);
-    return `Tenet ${t.id}: ${t.n}`;
-  }).join(', ');
-
-  const stageCtx = st.type==='narrative'
-    ? `Narrative stage: ${st.stage.toUpperCase()} — ${STAGE_DESC[st.stage]}.` : '';
-
-  const topicTrim = (st.topic||'').trim();
-  const topicDisplay = topicTrim || topicFallbackForType(st.type);
-  const narrativeBlock = st.type==='narrative'?`
-NARRATIVE FRAMEWORK:
-WHO=character intro via physical detail/behaviour/contradiction — ideally before naming
-WHERE=setting via sensory detail, atmosphere, pathetic fallacy — place as mood
-WHAT=inciting situation, action-driven, grounded
-TENSION=rising dread/anticipation, interiority, slowed time, ATFDS sentence mix
-COMPLICATION=unexpected twist/obstacle, shock action, short punchy sentences
-CLIMAX=peak moment, maximum pace, raw emotion — the point of no return
-RESOLUTION=aftermath, reflection, consequence, changed state
-FLASHBACK=memory intrusion, tense shift, sensory trigger, contrast with present
-ATFDS SENTENCE TYPES: Action / Thinking / Feeling / Description / Story-Atmosphere / Dialogue
-`:'';
-
-  const modes = [...st.modes].join(' and ');
-  const modeScope = (()=>{
-    const s=st.modes.has('sentence'), p=st.modes.has('paragraph');
-    if(s&&p)return 'Both modes selected — stimulus and task may include sentence- and/or paragraph-level scope; state clearly what length students produce.';
-    if(s)return 'Sentence mode only — main student writing scope is one or two sentences (upgrade passage or composed lines), except starter lists in CREATE.';
-    if(p)return 'Paragraph mode only — upgrade stimulus should be a short paragraph; CREATE should ask for a paragraph-length response unless using only bullet cues.';
-    return '';
-  })();
-  const extypes = [...st.extypes].join(' and ');
-  const stimHelp = stimulusFieldHelp(st.type, topicTrim, yearLabel).replace(/\\/g,'\\\\').replace(/"/g,'\\"');
-  const exDiff = exerciseTypeDifferentiation(st.extypes);
-  const createJsonFields = st.extypes.has('create')
-    ? `"focus_points": ["exactly 5 short strings — what to focus on while composing"],
-  "sentence_starters": ["exactly 8 strings — 4–5 words each; max 4 noun-first; rest prep / time-place adverb / conjunction / participle / verb-led per STARTER MIX"]`
-    : `"focus_points": null,
-  "sentence_starters": null`;
-
-  const prompt = `You are an expert Australian English teacher creating ONE classroom exercise for a big screen.
-
-STUDENT LEVEL: ${yearLabel}
-
-${yearBandCalibration(st.year)}
-
-SELECTED WRITING TYPE (must honour exactly — do not substitute narrative description): ${st.type}
-${stageCtx}
-TOPIC / THEME FOCUS: ${topicDisplay}
-EXERCISE MODE: ${modes}
-${modeScope ? `MODE LENGTH: ${modeScope}` : ''}
-EXERCISE TYPE: ${extypes}
-TENETS: ${tenetList}
-
-EXERCISE-TYPE DIFFERENTIATION (Upgrade vs Create — follow strictly; they must NOT look the same):
-${exDiff}
-
-${writingTypeRules(st.type)}
-
-TENET DEFINITIONS:
-${TENET_DEFS}
-${narrativeBlock}
-YOUR TASK: Create ONE exercise aligned with SELECTED WRITING TYPE above. Return ONLY valid JSON — no markdown fences, no preamble:
-
-{
-  "instruction": "Leave empty string \"\" — the UI does not show this field. Put all brief/scenario text in stimulus only.",
-  "stimulus": "${stimHelp}",
-  "hint": "Craft insight at the right difficulty for ${yearLabel}. One or two sentences max.",
-  ${createJsonFields}
-}
-
-QUALITY RULES:
-- Do NOT include a separate "task" block in JSON — it is not displayed. Put all student directions in stimulus (brief), focus_points, sentence_starters, and hint only.
-- Brief card shows **stimulus only** (instruction is hidden). CREATE scenario: **≤40 words**. UPGRADE passage: full weak sample (no word limit).
-- If CREATE is selected: JSON MUST include exactly 5 focus_points and 8 sentence_starters (arrays); **sentence_starters**: at most **4** noun-first; the **other four** must be non-noun openings (prep / time-or-place adverb / subordinator / participle / strong verb-led) — never substitute arrays with prose in stimulus alone.
-- Obey EXERCISE-TYPE DIFFERENTIATION: UPGRADE centres flawed passage; CREATE centres arrays + brief scenario.
-- YEAR-BAND CALIBRATION: stimulus difficulty must match band.
-- WRITING-TYPE LOCK; tenets apply within genre.
-- Multi-tenet: weave naturally.
-- Hints: band-appropriate, NOT generic ("use better words" fails)`;
-
-  setColLoading(idx);
-
+(function initDraftFromStorage() {
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':apiKey,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1800,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-
-    if(!res.ok){
-      const err=await res.json().catch(()=>({}));
-      throw new Error(err?.error?.message||`API error ${res.status}`);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (!data || data.v !== 1) return;
+    if (data.goal != null) {
+      const g = String(Math.max(10, Math.min(2000, parseInt(data.goal, 10) || 70)));
+      document.getElementById('target-input').value = g;
+      document.getElementById('target-display').textContent = g;
     }
-
-    const data   = await res.json();
-    const raw    = data.content.map(b=>b.text||'').join('');
-    const parsed = parseExerciseJson(raw);
-    renderCol(idx, parsed);
-    // clear teacher textarea on new generation
-    document.getElementById(`ta-${idx}`).value='';
-
-  } catch(e){
-    setColError(idx,e.message);
-  }
-}
-
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function parseExerciseJson(raw){
-  const clean  = raw.replace(/```json|```/gi,'').trim();
-  try{
-    return JSON.parse(clean);
-  }catch(_){
-    const i=clean.indexOf('{');
-    const j=clean.lastIndexOf('}');
-    if(i>=0&&j>i){
-      try{return JSON.parse(clean.slice(i,j+1));}
-      catch(e2){throw new Error(e2.message||'Invalid JSON in model response.');}
+    if (data.night) {
+      document.body.classList.add('theme-night');
+      const tb = document.getElementById('theme-btn');
+      if (tb) {
+        tb.textContent = '☽';
+        tb.title = 'Switch to daytime';
+      }
     }
-    throw new Error('Could not parse JSON from model response.');
-  }
-}
-function renderCreateColumns(focusPoints, starters){
-  const fp = Array.isArray(focusPoints)?focusPoints:[];
-  const ss = Array.isArray(starters)?starters:[];
-  const li=(arr,n)=>arr.slice(0,n).map(t=>`<li>${esc(String(t))}</li>`).join('');
-  return`<div class="ex-create-grid">
-    <div class="ex-create-col">
-      <div class="ex-create-col-h">What to focus on</div>
-      <ul class="ex-create-ul">${li(fp,5)}</ul>
-    </div>
-    <div class="ex-create-col">
-      <div class="ex-create-col-h">Sentence starters to consider</div>
-      <ul class="ex-create-ul">${li(ss,8)}</ul>
-    </div>
-  </div>`;
-}
-const BRIEF_MAX_WORDS = 40;
-function limitBriefWords(raw,st){
-  const t=String(raw??'').trim();
-  if(!t)return'';
-  if(st.extypes.has('upgrade'))return raw;
-  const w=t.split(/\s+/).filter(Boolean);
-  return w.length<=BRIEF_MAX_WORDS?t:w.slice(0,BRIEF_MAX_WORDS).join(' ');
-}
-function renderBrief(o,st){
-  const shown=limitBriefWords(o.stimulus??'',st);
-  if(!shown.trim())return'';
-  return`<div class="ex-brief"><div class="ex-brief-text">${esc(shown)}</div></div>`;
-}
-function renderCol(idx,d){
-  const o=d&&typeof d==='object'?d:{};
-  const st=colState[idx];
-  const gridHtml=st.extypes.has('create')?renderCreateColumns(o.focus_points,o.sentence_starters):'';
-  document.getElementById(`body-${idx}`).innerHTML=`
-    ${renderBrief(o,st)}
-    ${gridHtml}
-    <div class="ex-hint">${esc(o.hint??'')}</div>
-  `;
-  document.querySelector(`.btn-regen[data-col="${idx}"]`).disabled=false;
-}
-
-function setColLoading(idx){
-  document.querySelector(`.btn-regen[data-col="${idx}"]`).disabled=true;
-  document.getElementById(`body-${idx}`).innerHTML=`
-    <div class="col-loading">
-      <div class="spinner"></div>
-      <span class="loading-txt">generating...</span>
-    </div>`;
-}
-
-function setColError(idx,msg){
-  document.querySelector(`.btn-regen[data-col="${idx}"]`).disabled=false;
-  document.getElementById(`body-${idx}`).innerHTML=
-    `<div class="col-error">⚠ ${esc(msg)}</div>`;
-}
-
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-function mk(tag,cls){const el=document.createElement(tag);if(cls)el.className=cls;return el;}
-function mkLbl(txt){const l=mk('span','lbl');l.textContent=txt;return l;}
-function mkSel(opts,val){
-  const s=mk('select');
-  s.className='dr-select';
-  opts.forEach(([v,l])=>{
-    const o=document.createElement('option');
-    o.value=v;o.textContent=l;if(v===val)o.selected=true;
-    s.appendChild(o);
-  });
-  return s;
-}
-function toggleSet(set,val,chip){
-  if(set.has(val)){if(set.size>1){set.delete(val);chip.classList.remove('on');}}
-  else{set.add(val);chip.classList.add('on');}
-}
-function validateApi(){
-  const k=document.getElementById('api-key').value.trim();
-  if(!k){alert('Please enter your Anthropic API key.');return false;}
-  return true;
-}
-function esc(s){
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/\n/g,'<br>');
-}
+    if (data.html && String(data.html).trim()) {
+      const clean = sanitizeStoredEditorHtml(data.html);
+      if (!clean.trim()) {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e2) {}
+        setDraftStatus('warn', 'Saved draft looked like copied page code — cleared.');
+        return;
+      }
+      document.getElementById('editor').innerHTML = clean;
+      setDraftStatus('restored');
+      requestAnimationFrame(function() {
+        analyseAndRender();
+      });
+    }
+  } catch (e) {}
+})();
 </script>
 </body>
 </html>
