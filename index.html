@@ -371,7 +371,7 @@ select.dr-select:focus,select.dr-select:hover{
 }
 .ex-brief-text{
   font-family:'DM Sans',sans-serif;
-  font-size:18px;
+  font-size:var(--col-fz,18px);
   color:var(--tx);line-height:1.5;font-weight:400;
 }
 .ex-create-grid{
@@ -647,11 +647,11 @@ select.dr-select:focus,select.dr-select:hover{
         <div class="col-dot"></div>
         <span class="col-summary" id="sum-0">Click ⚙ to configure</span>
       </div>
-      <div class="col-strip-fz" role="group" aria-label="Font size for focus lists, starters, and hint (not the main brief)">
+      <div class="col-strip-fz" role="group" aria-label="Font size for brief, focus lists, starters, and hint">
         <span class="col-strip-fz-lbl">Scaffold</span>
         <div class="fz-row strip-fz-row">
-          <button type="button" class="fz-btn cfz-dn" data-col="0" title="Smaller focus lists &amp; starters">−</button>
-          <button type="button" class="fz-btn cfz-up" data-col="0" title="Larger focus lists &amp; starters">+</button>
+          <button type="button" class="fz-btn cfz-dn" data-col="0" title="Smaller brief, focus lists &amp; starters">−</button>
+          <button type="button" class="fz-btn cfz-up" data-col="0" title="Larger brief, focus lists &amp; starters">+</button>
         </div>
       </div>
       <div class="col-strip-right">
@@ -685,11 +685,11 @@ select.dr-select:focus,select.dr-select:hover{
         <div class="col-dot"></div>
         <span class="col-summary" id="sum-1">Click ⚙ to configure</span>
       </div>
-      <div class="col-strip-fz" role="group" aria-label="Font size for focus lists, starters, and hint (not the main brief)">
+      <div class="col-strip-fz" role="group" aria-label="Font size for brief, focus lists, starters, and hint">
         <span class="col-strip-fz-lbl">Scaffold</span>
         <div class="fz-row strip-fz-row">
-          <button type="button" class="fz-btn cfz-dn" data-col="1" title="Smaller focus lists &amp; starters">−</button>
-          <button type="button" class="fz-btn cfz-up" data-col="1" title="Larger focus lists &amp; starters">+</button>
+          <button type="button" class="fz-btn cfz-dn" data-col="1" title="Smaller brief, focus lists &amp; starters">−</button>
+          <button type="button" class="fz-btn cfz-up" data-col="1" title="Larger brief, focus lists &amp; starters">+</button>
         </div>
       </div>
       <div class="col-strip-right">
@@ -723,11 +723,11 @@ select.dr-select:focus,select.dr-select:hover{
         <div class="col-dot"></div>
         <span class="col-summary" id="sum-2">Click ⚙ to configure</span>
       </div>
-      <div class="col-strip-fz" role="group" aria-label="Font size for focus lists, starters, and hint (not the main brief)">
+      <div class="col-strip-fz" role="group" aria-label="Font size for brief, focus lists, starters, and hint">
         <span class="col-strip-fz-lbl">Scaffold</span>
         <div class="fz-row strip-fz-row">
-          <button type="button" class="fz-btn cfz-dn" data-col="2" title="Smaller focus lists &amp; starters">−</button>
-          <button type="button" class="fz-btn cfz-up" data-col="2" title="Larger focus lists &amp; starters">+</button>
+          <button type="button" class="fz-btn cfz-dn" data-col="2" title="Smaller brief, focus lists &amp; starters">−</button>
+          <button type="button" class="fz-btn cfz-up" data-col="2" title="Larger brief, focus lists &amp; starters">+</button>
         </div>
       </div>
       <div class="col-strip-right">
@@ -787,7 +787,7 @@ const STAGE_DESC = {
   flashback:'memory intrusion — sensory trigger, tense shift, contrast between past and present'
 };
 
-const TENET_DEFS = `T1: avoid starting sentences with pronouns/pointers (it/he/she/this/they/there/then/here/too/a/an)
+const TENET_DEFS = `T1: avoid starting sentences with pronouns/pointers (it/he/she/this/they/the/there/then/these/here/too/a/an)
 T2: avoid weak "to be" verbs (was/were/is/are/had/have/been) — use action verbs instead
 T3: replace basic verbs (looked/saw/went/said/walked/made/came/got) with vivid precise ones
 T4: avoid repeating key nouns or verbs in adjacent sentences — use elegant variation
@@ -844,7 +844,7 @@ Scene, character, conflict, and story-stage craft are appropriate. Use story-sta
 function exerciseTypeDifferentiation(extypes){
   const hasU = extypes.has('upgrade');
   const hasC = extypes.has('create');
-  const weakOpeners = 'Do not start any starter with weak pronoun/pointer openers (case-insensitive first word): it, a, an, he, she, him, his, her, they, them, this, these, that, those. Avoid expletive "There/Then" as the first word unless "There" is clearly adverbial place ("There, beyond…").';
+  const weakOpeners = 'Do not start any starter with weak pronoun/pointer openers (case-insensitive first word): the, it, a, an, he, she, him, his, her, they, them, this, these, that, those. Avoid expletive "There/Then" as the first word unless "There" is clearly adverbial place ("There, beyond…").';
   const starterMix = `SENTENCE STARTERS (8 strings; each is ONLY the first 4–5 words of a possible sentence):
 - **At most 4** of the 8 may be **noun-led** subject openers: proper nouns, bare nouns, or article + noun ("Maya hesitated…", "Sparks flew…", "The corridor…", "A whisper…"). Count these toward the max of four.
 - The **other starters (at least 4)** must **not** be noun-first: use **prepositions** (In, On, After, Through, Beyond, Under, Without,…), **adverbs of time or place** (Yesterday, Tonight, Inside, Downstairs,…), **subordinating conjunctions** (Although, When, While, If, After,…), **participial** openers (Frowning, Trapped,…), or **strong verb-first** lines ("Scratch that thought…") — varied and engaging.
@@ -1426,7 +1426,7 @@ function initTeacherPanels(){
   });
 }
 
-// ── COLUMN STRIP FONT (exercise body only; controls live in header) ────────────
+// ── COLUMN STRIP FONT (--col-fz on #col-N: brief + create lists + hint) ───────
 function initColStripFz(){
   document.querySelectorAll('.cfz-dn').forEach(b=>{
     b.addEventListener('click',()=>{
