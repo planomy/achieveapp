@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing Exercise Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0b0d12;
+  --s1:#111318;
+  --s2:#161a24;
+  --s3:#1c2030;
+  --s4:#222840;
+  --bd:#252d42;
+  --bd2:#333d58;
+  --gold:#f0b429;
+  --gold-d:#8a6510;
+  --gold-bg:rgba(240,180,41,0.07);
+  --teal:#2dd4bf;
+  --teal-d:#1a6e64;
+  --red:#f87171;
+  --tx:#d8dce8;
+  --tx2:#7e8aa0;
+  --tx3:#424e66;
+  --c0:#818cf8;
+  --c1:#2dd4bf;
+  --c2:#f0b429;
+  --pick:#e07020;
+  --pick-d:#a34812;
+  --pick-bg:rgba(224,112,32,0.14);
+  --chip-off-bg:#181c26;
+  --chip-off-bd:#2a3145;
+  --chip-off-tx:#5c6578;
+  --r:12px;
+  --rl:18px;
+  --gen-bg:var(--gold);
+  --gen-fg:#0b0d12;
+}
+
+/* ── LIGHT MODE (student-portal style: lavender base, violet accents, soft depth) ── */
+[data-theme="light"]{
+  --bg:#f3f0ff;
+  --s1:#ffffff;
+  --s2:#faf8ff;
+  --s3:#f4efff;
+  --s4:#ebe4ff;
+  --bd:#e4dbf7;
+  --bd2:#cfc2eb;
+  --gold:#8b5cf6;
+  --gold-d:#6d28d9;
+  --gold-bg:rgba(139,92,246,0.09);
+  --teal:#0d9488;
+  --teal-d:#0f766e;
+  --red:#dc2626;
+  --tx:#1a1628;
+  --tx2:#534e67;
+  --tx3:#7c758f;
+  --c0:#8b5cf6;
+  --c1:#a855f7;
+  --c2:#c084fc;
+  --pick:#7c3aed;
+  --pick-d:#6d28d9;
+  --pick-bg:rgba(124,58,237,0.11);
+  --chip-off-bg:#f6f2ff;
+  --chip-off-bd:#e4dbf7;
+  --chip-off-tx:#6b647e;
+  --r:16px;
+  --gen-bg:linear-gradient(165deg,#9f75fc 0%,#834af7 48%,#7239ea 100%);
+  --gen-fg:#ffffff;
+  --shadow-soft:0 2px 14px rgba(91,33,182,0.07);
+  --shadow-card:0 6px 28px rgba(91,33,182,0.09);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;font-size:21px;line-height:1.5;}
+[data-theme="light"] body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+
+/* ── TOP BAR (collapsible shell) ── */
+#topbar-shell{
+  flex-shrink:0;z-index:20;display:flex;flex-direction:column;
+}
+#topbar-panel{
+  display:grid;
+  grid-template-rows:1fr;
+  transition:grid-template-rows .42s cubic-bezier(.4,0,.2,1);
+}
+#topbar-shell.collapsed #topbar-panel{grid-template-rows:0fr;}
+.topbar-panel-inner{
+  overflow:hidden;
+  min-height:0;
+}
+#topbar{
+  background:var(--s1);
+  padding:9px 18px 10px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+#topbar-handle{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;gap:10px 14px;
+  padding:6px 14px;
+  background:var(--s1);
+  border-top:1px solid var(--bd);
+  border-bottom:1px solid var(--bd);
+}
+.topbar-handle-left{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  justify-self:start;min-width:0;
+}
+.topbar-handle-center{
+  display:flex;align-items:center;gap:6px;
+  justify-self:center;
+}
+.topbar-handle-right{
+  display:flex;align-items:center;gap:10px;
+  justify-self:end;
+}
+.topbar-handle-lbl{
+  font-family:'DM Mono',monospace;font-size:11px;color:var(--tx3);
+  text-transform:uppercase;letter-spacing:.09em;
+}
+.timer-adj{
+  width:30px;height:30px;font-size:18px;padding:0;
+}
+.timer-display{
+  font-family:'DM Mono',monospace;font-size:17px;font-weight:500;
+  font-variant-numeric:tabular-nums;letter-spacing:.04em;
+  min-width:5.6ch;text-align:center;
+  padding:5px 12px;border-radius:9px;cursor:pointer;
+  background:var(--s2);border:1px solid var(--bd);color:var(--gold);
+  transition:background .12s,border-color .12s,color .12s;
+}
+.timer-display:hover{background:var(--s3);border-color:var(--bd2);color:var(--tx);}
+#topbar-handle.timer-running .timer-display{
+  color:var(--teal);border-color:color-mix(in srgb,var(--teal) 35%,var(--bd));
+}
+#topbar-handle.timer-done .timer-display{
+  color:var(--red);border-color:color-mix(in srgb,var(--red) 35%,var(--bd));
+  animation:timer-pulse .9s ease-in-out 2;
+}
+@keyframes timer-pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.btn-theme{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--s2);border:1px solid var(--bd);color:var(--tx2);
+  font-family:'DM Mono',monospace;font-size:12px;font-weight:500;
+  padding:6px 13px;border-radius:999px;cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s,box-shadow .15s;
+}
+.btn-theme:hover{background:var(--s3);border-color:var(--bd2);color:var(--tx);}
+[data-theme="light"] .btn-theme{
+  background:#fff;
+  box-shadow:var(--shadow-soft);
+}
+[data-theme="light"] .btn-theme:hover{
+  border-color:#c4b5fd;
+  color:var(--pick);
+}
+.btn-theme .th-ico{font-size:14px;line-height:1;}
+#btn-topbar-toggle{
+  display:inline-flex;align-items:center;gap:8px;
+  background:transparent;border:1px solid var(--bd);color:var(--tx2);
+  font-family:'DM Mono',monospace;font-size:12px;
+  padding:5px 14px;border-radius:8px;cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s;
+}
+#btn-topbar-toggle:hover{background:var(--s2);border-color:var(--bd2);color:var(--tx);}
+#btn-topbar-toggle .tbb-chevron{font-size:11px;line-height:1;opacity:.85;}
+#topbar-shell.collapsed #topbar-handle{border-top:none;}
+.lbl{font-family:'DM Mono',monospace;font-size:13px;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:4px;}
+.tb-g{display:flex;flex-direction:column;}
+.vdiv{width:1px;height:46px;background:var(--bd);flex-shrink:0;opacity:.85;}
+input[type=password]{
+  background:var(--s2);border:1px solid var(--bd);color:var(--tx);
+  font-family:'DM Mono',monospace;font-size:15px;padding:8px 12px;
+  border-radius:9px;outline:none;width:315px;transition:border-color .15s;
+}
+input[type=password]:focus{border-color:var(--gold-d);}
+.api-ok{font-family:'DM Mono',monospace;font-size:14px;color:var(--teal);}
+.api-no{font-family:'DM Mono',monospace;font-size:14px;color:var(--red);}
+.fz-row{display:flex;align-items:center;gap:6px;}
+.fz-btn{
+  background:var(--s2);border:1px solid var(--bd);color:var(--tx2);
+  width:33px;height:33px;border-radius:8px;cursor:pointer;
+  font-size:20px;display:flex;align-items:center;justify-content:center;
+  transition:all .12s;font-family:'DM Mono',monospace;flex-shrink:0;
+}
+.fz-btn:hover{background:var(--s3);color:var(--tx);border-color:var(--bd2);}
+.fz-val{font-family:'DM Mono',monospace;font-size:15px;color:var(--tx2);min-width:39px;text-align:center;}
+.fz-reset{width:auto!important;padding:0 11px;font-size:14px!important;}
+#btn-gen{
+  background:var(--gen-bg);color:var(--gen-fg);border:none;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:17px;
+  padding:12px 27px;border-radius:14px;cursor:pointer;
+  letter-spacing:.05em;text-transform:uppercase;
+  transition:background .15s,filter .15s,transform .12s,box-shadow .15s;flex-shrink:0;
+}
+[data-theme="dark"] #btn-gen:hover{background:#f5c842;color:#0b0d12;transform:translateY(-1px);}
+[data-theme="light"] #btn-gen{
+  box-shadow:0 4px 18px rgba(114,57,234,0.32);
+}
+[data-theme="light"] #btn-gen:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+  box-shadow:0 6px 22px rgba(114,57,234,0.38);
+}
+#btn-gen:active{transform:none;}
+#btn-gen:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:none;}
+
+/* ── GLOBAL QUICK BAR (right of Generate All) ── */
+.global-tools{
+  flex:1;display:flex;flex-wrap:wrap;align-items:flex-end;gap:9px 11px;
+  min-width:0;margin-left:2px;padding:8px 11px 9px;
+  background:rgba(0,0,0,.18);border:1px solid var(--bd);border-radius:12px;
+}
+[data-theme="light"] .global-tools{
+  background:#ffffff;
+  box-shadow:var(--shadow-soft);
+}
+.gb-group{display:flex;flex-direction:column;gap:2px;}
+.gb-group .lbl{margin-bottom:0;font-size:10px;letter-spacing:.09em;color:var(--tx3);}
+.gb-types,.gb-modes,.gb-ex{display:flex;flex-wrap:wrap;gap:4px;}
+.gb-types .mode-chip{font-size:12px;padding:3px 9px;}
+.gb-stage-wrap{display:flex;flex-direction:column;gap:2px;}
+.gb-stage-wrap select.dr-select{font-size:12px;padding:5px 8px;max-width:148px;}
+.gb-t-wrap{display:flex;flex-direction:column;gap:2px;max-width:min(100%,360px);}
+.gb-t-row{display:flex;flex-wrap:wrap;gap:2px;}
+.gb-ten{
+  font-family:'DM Mono',monospace;font-size:10px;font-weight:500;
+  padding:3px 6px;border-radius:6px;border:1px solid var(--chip-off-bd);
+  background:var(--chip-off-bg);color:var(--chip-off-tx);cursor:pointer;
+  transition:all .12s;user-select:none;line-height:1;
+}
+.gb-ten:hover{border-color:var(--bd2);color:var(--tx2);}
+.gb-ten.on{background:var(--pick-bg);border-color:var(--pick-d);color:var(--pick);}
+.gb-topic{
+  background:var(--s2);border:1px solid var(--bd);color:var(--tx);
+  font-family:'DM Mono',monospace;font-size:12px;padding:5px 9px;
+  border-radius:7px;outline:none;width:min(188px,26vw);transition:border-color .15s;
+}
+.gb-topic:focus{border-color:var(--gold-d);}
+.gb-topic.gb-topic-on{background:var(--pick-bg);border-color:var(--pick-d);color:var(--pick);}
+
+/* ── MAIN COLS WRAPPER ── */
+#main{flex:1;display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;min-height:0;}
+
+/* ── COLUMN — each band gets a soft tint from --ca (purple / teal / gold) ── */
+.col:nth-child(1){--ca:var(--c0);}
+.col:nth-child(2){--ca:var(--c1);}
+.col:nth-child(3){--ca:var(--c2);}
+.col{
+  display:flex;flex-direction:column;
+  border-right:1px solid var(--bd);overflow:hidden;position:relative;
+  background:color-mix(in srgb,var(--ca) 7%,var(--bg));
+}
+.col:last-child{border-right:none;}
+
+/* Centre column: deeper wash so it reads as the focal band */
+.col:nth-child(2){
+  background:color-mix(in srgb,var(--ca) 13%,var(--bg));
+}
+.col:nth-child(2) .col-strip{
+  background:color-mix(in srgb,var(--ca) 20%,var(--s1));
+  box-shadow:inset 0 -2px 0 color-mix(in srgb,var(--ca) 38%,transparent);
+}
+.col:nth-child(2) .col-drawer{background:color-mix(in srgb,var(--ca) 15%,var(--s2));}
+.col:nth-child(2) .ex-brief,
+.col:nth-child(2) .ex-create-col{
+  background:color-mix(in srgb,var(--ca) 12%,var(--s2));
+  border-color:color-mix(in srgb,var(--ca) 24%,var(--bd));
+}
+.col:nth-child(2) .ex-hint{
+  background:color-mix(in srgb,var(--ca) 10%,var(--s3));
+  border-color:color-mix(in srgb,var(--ca) 18%,var(--bd));
+}
+.col:nth-child(2) .teacher-panel{background:color-mix(in srgb,var(--ca) 19%,var(--s1));}
+.col:nth-child(2) .teacher-header:hover{background:color-mix(in srgb,var(--ca) 14%,var(--s2));}
+.col:nth-child(2) .teacher-ta{background:color-mix(in srgb,var(--ca) 13%,var(--s2));}
+
+/* col top strip — subtle band tint; column colour mainly via dot */
+.col-strip{
+  background:color-mix(in srgb,var(--ca) 13%,var(--s1));
+  border-bottom:1px solid var(--bd);
+  box-shadow:inset 0 -2px 0 color-mix(in srgb,var(--ca) 24%,transparent);
+  padding:8px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;gap:10px;z-index:10;
+}
+.col-strip-left{display:flex;align-items:center;gap:9px;min-width:0;flex:1;}
+.col-dot{width:8px;height:8px;border-radius:50%;background:var(--ca);flex-shrink:0;opacity:.92;}
+.col-summary{
+  font-family:'DM Mono',monospace;font-size:13px;color:var(--tx2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.col-strip-fz{
+  display:flex;align-items:center;flex-shrink:0;padding:0 2px;gap:7px;
+}
+.col-strip-fz-lbl{
+  font-family:'DM Mono',monospace;font-size:10px;color:var(--tx3);
+  text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;
+}
+.col-strip-fz .strip-fz-row{gap:4px;}
+.col-strip-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.icon-btn{
+  background:transparent;border:1px solid var(--bd);color:var(--tx2);
+  width:36px;height:36px;border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;transition:all .12s;flex-shrink:0;
+}
+.icon-btn:hover{background:var(--s3);color:var(--tx);border-color:var(--bd2);}
+.icon-btn.active{background:var(--pick-bg);border-color:var(--pick-d);color:var(--pick);}
+.btn-regen{
+  background:var(--s2);border:1px solid var(--bd);color:var(--tx2);
+  font-family:'DM Mono',monospace;font-size:14px;padding:5px 12px;
+  border-radius:8px;cursor:pointer;transition:all .12s;white-space:nowrap;
+}
+.btn-regen:hover{background:var(--s3);color:var(--tx);}
+.btn-regen:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── DRAWER ── */
+.col-drawer{
+  background:color-mix(in srgb,var(--ca) 9%,var(--s2));
+  border-bottom:1px solid var(--bd);
+  overflow:hidden;
+  max-height:0;
+  transition:max-height .3s cubic-bezier(.4,0,.2,1);
+  flex-shrink:0;
+  z-index:9;
+}
+.col-drawer.open{max-height:630px;}
+.drawer-inner{padding:15px 18px;display:flex;flex-direction:column;gap:15px;}
+
+.dr-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;}
+.dr-field{display:flex;flex-direction:column;gap:5px;}
+.dr-input{
+  background:var(--s3);border:1px solid var(--chip-off-bd);color:var(--tx2);
+  font-family:'DM Mono',monospace;font-size:15px;padding:8px 11px;
+  border-radius:9px;outline:none;transition:border-color .15s,color .15s;
+}
+.dr-input:focus{border-color:var(--pick);color:var(--tx);}
+.dr-input.dr-input-on{
+  background:var(--pick-bg);border:1px solid var(--pick-d);color:var(--pick);
+}
+.dr-input.dr-input-on:focus{color:var(--pick);border-color:var(--pick-d);}
+.dr-input{width:225px;}
+select.dr-select{
+  background:var(--pick-bg);border:1px solid var(--pick-d);color:var(--pick);
+  font-family:'DM Mono',monospace;font-size:15px;padding:8px 11px;
+  border-radius:9px;outline:none;transition:border-color .15s,color .15s,background .15s,filter .12s;
+  cursor:pointer;
+}
+select.dr-select:focus,select.dr-select:hover{
+  filter:brightness(1.08);
+}
+.dr-input::placeholder{color:var(--tx3);}
+
+/* tenet chips in drawer */
+.tenet-grid{display:flex;flex-direction:column;gap:6px;}
+.tenet-chip{
+  font-family:'DM Sans',sans-serif;font-size:15px;
+  padding:6px 14px;border-radius:9px;
+  border:1px solid var(--chip-off-bd);background:var(--chip-off-bg);
+  color:var(--chip-off-tx);cursor:pointer;transition:all .12s;
+  user-select:none;text-align:left;
+}
+.tenet-chip:hover:not(.disabled){border-color:var(--bd2);color:var(--tx2);}
+.tenet-chip.on{background:var(--pick-bg);border-color:var(--pick-d);color:var(--pick);}
+.tenet-chip.disabled{opacity:.35;cursor:not-allowed;}
+.tenet-note{font-family:'DM Mono',monospace;font-size:14px;color:var(--tx3);}
+
+/* mode chips in drawer */
+.mode-chip{
+  font-family:'DM Mono',monospace;font-size:14px;
+  padding:5px 12px;border-radius:30px;
+  border:1px solid var(--chip-off-bd);background:var(--chip-off-bg);
+  color:var(--chip-off-tx);cursor:pointer;transition:all .12s;user-select:none;
+}
+.mode-chip:hover{border-color:var(--bd2);color:var(--tx2);}
+.mode-chip.on{background:var(--pick-bg);border-color:var(--pick-d);color:var(--pick);}
+
+.dr-gen-btn{
+  background:var(--ca);color:#0b0d12;border:none;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:15px;
+  padding:9px 21px;border-radius:9px;cursor:pointer;
+  letter-spacing:.04em;text-transform:uppercase;transition:all .12s;align-self:flex-start;
+}
+.dr-gen-btn:hover{filter:brightness(1.1);}
+
+/* ── EXERCISE BODY ── */
+.col-body{
+  flex:1;overflow-y:auto;padding:16px 16px;
+  display:flex;flex-direction:column;gap:12px;min-height:0;
+}
+.col-body::-webkit-scrollbar{width:5px;}
+.col-body::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px;}
+
+.ex-brief{
+  background:color-mix(in srgb,var(--ca) 8%,var(--s2));
+  border:1px solid color-mix(in srgb,var(--ca) 18%,var(--bd));
+  border-radius:var(--r);
+  padding:14px 16px 16px;
+}
+.ex-brief-text{
+  font-family:'DM Sans',sans-serif;
+  font-size:var(--col-fz,18px);
+  color:var(--tx);line-height:1.5;font-weight:400;
+}
+.ex-create-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 12px;
+  align-items:start;
+}
+@media (max-width:1100px){
+  .ex-create-grid{grid-template-columns:1fr;}
+}
+.ex-create-col{
+  background:color-mix(in srgb,var(--ca) 8%,var(--s2));
+  border:1px solid color-mix(in srgb,var(--ca) 18%,var(--bd));
+  border-radius:var(--r);
+  padding:13px 15px;min-width:0;
+}
+.ex-create-col-h{
+  font-family:'DM Mono',monospace;font-size:11px;color:var(--tx3);
+  text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px;
+}
+.ex-create-ul{margin:0;padding-left:20px;}
+.ex-create-ul li{
+  font-family:'DM Sans',sans-serif;
+  font-size:calc(var(--col-fz,18px) * 0.88);
+  color:var(--tx);line-height:1.55;margin-bottom:6px;
+}
+.ex-create-ul li:last-child{margin-bottom:0;}
+.ex-hint{
+  background:color-mix(in srgb,var(--ca) 6%,var(--s3));
+  border:1px solid color-mix(in srgb,var(--ca) 12%,var(--bd));
+  border-radius:var(--r);
+  padding:11px 15px;font-family:'DM Mono',monospace;
+  font-size:calc(var(--col-fz,18px) * 0.7);
+  color:var(--tx3);line-height:1.55;
+}
+.ex-hint::before{content:'💡 ';opacity:.65;}
+[data-theme="light"] .ex-brief,
+[data-theme="light"] .ex-create-col{
+  box-shadow:var(--shadow-card);
+}
+[data-theme="light"] .ex-hint{
+  box-shadow:var(--shadow-soft);
+}
+[data-theme="light"] .dr-gen-btn{
+  color:#fff;
+  box-shadow:0 2px 10px rgba(124,58,237,0.22);
+}
+[data-theme="light"] .col-body::-webkit-scrollbar-thumb{background:#cfc2eb;}
+
+/* loading/empty */
+.col-loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
+.spinner{width:39px;height:39px;border:3px solid var(--bd2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-txt{font-family:'DM Mono',monospace;font-size:15px;color:var(--tx3);animation:pulse 1.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.col-empty{flex:1;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:15px;color:var(--tx3);}
+.col-error{margin:15px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2);border-radius:var(--r);padding:14px 17px;font-family:'DM Mono',monospace;font-size:15px;color:var(--red);line-height:1.5;}
+[data-theme="light"] .col-error{background:rgba(220,38,38,.06);border-color:rgba(220,38,38,.18);}
+
+/* ── TEACHER PANEL ── */
+.teacher-panel{
+  border-top:1px solid var(--bd);
+  background:color-mix(in srgb,var(--ca) 11%,var(--s1));
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+}
+.teacher-header{
+  padding:8px 15px;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;user-select:none;
+}
+.teacher-header:hover{background:color-mix(in srgb,var(--ca) 10%,var(--s2));}
+.teacher-lbl{font-family:'DM Mono',monospace;font-size:14px;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;}
+.teacher-fz{display:flex;align-items:center;gap:5px;}
+.teacher-body{
+  overflow:hidden;max-height:0;transition:max-height .25s ease;
+}
+.teacher-body.open{max-height:330px;}
+.teacher-panel.teacher-para .teacher-body.open{max-height:412px;}
+.teacher-ta{
+  width:100%;
+  background:color-mix(in srgb,var(--ca) 8%,var(--s2));
+  border:none;border-top:1px solid var(--bd);
+  color:var(--tx);font-family:'DM Sans',sans-serif;
+  font-size:var(--teacher-fz,21px);
+  padding:15px 17px;resize:none;outline:none;
+  line-height:1.6;min-height:150px;
+}
+.teacher-panel.teacher-para .teacher-ta{min-height:188px;}
+.teacher-ta::placeholder{color:var(--tx3);}
+
+/* ── LIGHT: calmer “product” UI — less monospace / terminal density ── */
+[data-theme="light"] body{font-size:16px;}
+[data-theme="light"] #topbar{padding:14px 22px 15px;gap:16px;}
+[data-theme="light"] #topbar-handle{padding:8px 18px;}
+[data-theme="light"] .vdiv{opacity:.4;height:42px;}
+[data-theme="light"] .lbl,
+[data-theme="light"] .gb-group .lbl{
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;
+  letter-spacing:.02em;text-transform:none;color:var(--tx2);margin-bottom:6px;
+}
+[data-theme="light"] .topbar-handle-lbl{
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;
+  letter-spacing:.02em;text-transform:none;
+}
+[data-theme="light"] .btn-theme,
+[data-theme="light"] #btn-topbar-toggle{
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;border-radius:999px;
+}
+[data-theme="light"] .timer-display{
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;
+  border-radius:12px;
+}
+[data-theme="light"] .timer-adj{border-radius:10px;}
+[data-theme="light"] input[type=password],
+[data-theme="light"] .dr-input,
+[data-theme="light"] select.dr-select,
+[data-theme="light"] .gb-topic{
+  font-family:'DM Sans',sans-serif;font-size:14px;border-radius:12px;
+}
+[data-theme="light"] .api-ok,[data-theme="light"] .api-no{font-family:'DM Sans',sans-serif;font-weight:500;}
+[data-theme="light"] .fz-btn,[data-theme="light"] .fz-val{font-family:'DM Sans',sans-serif;font-weight:600;}
+[data-theme="light"] .fz-reset{font-family:'DM Sans',sans-serif!important;font-weight:600!important;}
+[data-theme="light"] .global-tools{
+  padding:14px 18px 17px;gap:14px 20px;border:none;border-radius:18px;
+}
+[data-theme="light"] .mode-chip{
+  font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;
+  padding:7px 14px;border-radius:999px;
+}
+[data-theme="light"] .gb-types .mode-chip{font-size:12px;padding:6px 12px;}
+[data-theme="light"] .gb-ten{
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;padding:5px 8px;border-radius:8px;
+}
+[data-theme="light"] .col-summary{
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;letter-spacing:.01em;
+}
+[data-theme="light"] .col-strip-fz-lbl{
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;
+  text-transform:none;letter-spacing:.02em;
+}
+[data-theme="light"] .col-strip{padding:12px 18px;}
+[data-theme="light"] .btn-regen{font-family:'DM Sans',sans-serif;font-weight:600;border-radius:10px;padding:6px 14px;}
+[data-theme="light"] .drawer-inner{padding:20px 22px;gap:18px;}
+[data-theme="light"] .tenet-note{font-family:'DM Sans',sans-serif;font-size:13px;}
+[data-theme="light"] .tenet-chip{font-size:14px;padding:10px 16px;border-radius:12px;}
+[data-theme="light"] .dr-gen-btn{border-radius:12px;padding:11px 24px;}
+[data-theme="light"] .col-body{padding:20px 18px;gap:16px;}
+[data-theme="light"] .ex-brief,[data-theme="light"] .ex-create-col{border-radius:18px;}
+[data-theme="light"] .ex-create-col-h{
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;
+  text-transform:none;letter-spacing:.06em;
+}
+[data-theme="light"] .ex-hint{font-family:'DM Sans',sans-serif;font-weight:400;border-radius:14px;}
+[data-theme="light"] .teacher-lbl{
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;
+  text-transform:none;letter-spacing:.04em;color:var(--tx2);
+}
+[data-theme="light"] .teacher-header{padding:12px 18px;}
+[data-theme="light"] .loading-txt,[data-theme="light"] .col-empty,[data-theme="light"] .col-error{font-family:'DM Sans',sans-serif;}
+[data-theme="light"] .col{border-right-color:rgba(139,92,246,.12);}
+[data-theme="light"] .icon-btn{border-radius:11px;}
+[data-theme="light"] #btn-gen{font-size:16px;padding:13px 26px;border-radius:16px;letter-spacing:.03em;}
+
+/* Named presets (saved setups) */
+.preset-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:min(420px,94vw);}
+.preset-select{min-width:200px;max-width:min(280px,85vw);flex:1;}
+.preset-del-btn{min-width:36px;padding-left:10px!important;padding-right:10px!important;font-weight:600;}
+</style>
+</head>
+<body>
+<div style="display:flex;flex-direction:column;height:100vh;">
+
+<!-- TOP BAR -->
+<div id="topbar-shell">
+  <div id="topbar-panel">
+    <div class="topbar-panel-inner">
+<div id="topbar">
+  <div class="tb-g">
+    <span class="lbl">API Key</span>
+    <div style="display:flex;align-items:center;gap:9px;">
+      <input type="password" id="api-key" placeholder="sk-ant-api03-..." autocomplete="off">
+      <span id="api-st" class="api-no">not set</span>
+    </div>
+  </div>
+  <div class="vdiv"></div>
+  <div class="tb-g">
+    <span class="lbl">Teacher font (all)</span>
+    <div class="fz-row">
+      <button class="fz-btn" id="gfz-dn">−</button>
+      <span class="fz-val" id="gfz-val">21</span>
+      <button class="fz-btn" id="gfz-up">+</button>
+      <button class="fz-btn fz-reset" id="gfz-reset">reset</button>
+    </div>
+  </div>
+  <div class="vdiv"></div>
+  <button id="btn-gen">⚡ Generate All</button>
+  <div class="global-tools" id="global-tools">
+    <div class="gb-group gb-presets-wrap">
+      <span class="lbl">Saved setups</span>
+      <div class="preset-row">
+        <select id="preset-select" class="dr-select preset-select" aria-label="Load a saved setup">
+          <option value="">— Load a saved setup —</option>
+        </select>
+        <button type="button" class="btn-regen" id="preset-save" title="Save all current controls as a named setup">Save current</button>
+        <button type="button" class="btn-regen preset-del-btn" id="preset-delete" disabled title="Delete selected setup">✕</button>
+      </div>
+    </div>
+    <div class="gb-group">
+      <span class="lbl">Writing type</span>
+      <div class="gb-types" role="group" aria-label="Writing type">
+        <span class="mode-chip gb-type" data-gb-type="narrative" tabindex="0">Narrative</span>
+        <span class="mode-chip gb-type" data-gb-type="persuasive" tabindex="0">Persuasive</span>
+        <span class="mode-chip gb-type" data-gb-type="analytical" tabindex="0">Analytical</span>
+      </div>
+    </div>
+    <div class="gb-group gb-stage-wrap" id="gb-stage-wrap">
+      <span class="lbl">Narrative stage</span>
+      <select id="gb-stage" class="dr-select" aria-label="Narrative story stage">
+        <option value="who">WHO</option>
+        <option value="where">WHERE</option>
+        <option value="what">WHAT</option>
+        <option value="tension">TENSION</option>
+        <option value="complication">COMPLICATION</option>
+        <option value="climax">CLIMAX</option>
+        <option value="resolution">RESOLUTION</option>
+        <option value="flashback">FLASHBACK</option>
+      </select>
+    </div>
+    <div class="gb-group gb-t-wrap">
+      <span class="lbl">Tenets</span>
+      <div class="gb-t-row" id="gb-t-row" aria-label="Tenet presets"></div>
+    </div>
+    <div class="gb-group">
+      <span class="lbl">Mode</span>
+      <div class="gb-modes" role="group" aria-label="Mode">
+        <span class="mode-chip" data-gb-mode="sentence" tabindex="0">Sentence</span>
+        <span class="mode-chip" data-gb-mode="paragraph" tabindex="0">Paragraph</span>
+      </div>
+    </div>
+    <div class="gb-group">
+      <span class="lbl">Exercise type</span>
+      <div class="gb-ex" role="group" aria-label="Exercise type">
+        <span class="mode-chip" data-gb-ex="upgrade" tabindex="0">Upgrade</span>
+        <span class="mode-chip" data-gb-ex="create" tabindex="0">Create</span>
+      </div>
+    </div>
+    <div class="gb-group">
+      <span class="lbl">Topic / theme</span>
+      <input type="text" id="gb-topic" class="gb-topic" placeholder="storm, heist, film title…" autocomplete="off">
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+  <div id="topbar-handle">
+    <div class="topbar-handle-left">
+      <span class="topbar-handle-lbl">Appearance</span>
+      <button type="button" class="btn-theme" id="btn-theme" aria-pressed="false" title="Switch theme">
+        <span class="th-ico" aria-hidden="true">☀️</span><span class="th-txt">Light</span>
+      </button>
+    </div>
+    <div class="topbar-handle-center" role="group" aria-label="Session timer">
+      <button type="button" class="fz-btn timer-adj" id="timer-dn" title="Subtract one minute">−</button>
+      <button type="button" class="timer-display" id="timer-display" aria-live="polite" title="Start or pause (Shift+click to reset to set time)">05:00</button>
+      <button type="button" class="fz-btn timer-adj" id="timer-up" title="Add one minute">+</button>
+    </div>
+    <div class="topbar-handle-right">
+      <button type="button" id="btn-topbar-toggle" aria-expanded="true" aria-controls="topbar-panel" title="Collapse or expand the header">
+        <span class="tbb-chevron" aria-hidden="true">▲</span>
+        <span class="tbb-label">Hide controls</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- COLUMNS -->
+<div id="main">
+
+  <!-- COL 0 -->
+  <div class="col" id="col-0">
+    <div class="col-strip">
+      <div class="col-strip-left">
+        <div class="col-dot"></div>
+        <span class="col-summary" id="sum-0">Click ⚙ to configure</span>
+      </div>
+      <div class="col-strip-fz" role="group" aria-label="Font size for brief, focus lists, starters, and hint">
+        <span class="col-strip-fz-lbl">Scaffold</span>
+        <div class="fz-row strip-fz-row">
+          <button type="button" class="fz-btn cfz-dn" data-col="0" title="Smaller brief, focus lists &amp; starters">−</button>
+          <button type="button" class="fz-btn cfz-up" data-col="0" title="Larger brief, focus lists &amp; starters">+</button>
+        </div>
+      </div>
+      <div class="col-strip-right">
+        <button class="btn-regen" data-col="0">↺</button>
+        <button class="icon-btn" data-toggle="0" title="Settings">⚙</button>
+      </div>
+    </div>
+    <div class="col-drawer" id="drawer-0">
+      <div class="drawer-inner" id="di-0"></div>
+    </div>
+    <div class="col-body" id="body-0"><div class="col-empty">Configure → Generate</div></div>
+    <div class="teacher-panel" id="tp-0">
+      <div class="teacher-header" data-tp="0">
+        <span class="teacher-lbl">Teacher response</span>
+        <div class="teacher-fz" onclick="event.stopPropagation()">
+          <button class="fz-btn tfz-dn" data-col="0">−</button>
+          <span class="fz-val tfz-val" data-col="0">21</span>
+          <button class="fz-btn tfz-up" data-col="0">+</button>
+        </div>
+      </div>
+      <div class="teacher-body" id="tb-0">
+        <textarea class="teacher-ta" id="ta-0" placeholder="Type your model response here..." rows="4"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 1 -->
+  <div class="col" id="col-1">
+    <div class="col-strip">
+      <div class="col-strip-left">
+        <div class="col-dot"></div>
+        <span class="col-summary" id="sum-1">Click ⚙ to configure</span>
+      </div>
+      <div class="col-strip-fz" role="group" aria-label="Font size for brief, focus lists, starters, and hint">
+        <span class="col-strip-fz-lbl">Scaffold</span>
+        <div class="fz-row strip-fz-row">
+          <button type="button" class="fz-btn cfz-dn" data-col="1" title="Smaller brief, focus lists &amp; starters">−</button>
+          <button type="button" class="fz-btn cfz-up" data-col="1" title="Larger brief, focus lists &amp; starters">+</button>
+        </div>
+      </div>
+      <div class="col-strip-right">
+        <button class="btn-regen" data-col="1">↺</button>
+        <button class="icon-btn" data-toggle="1" title="Settings">⚙</button>
+      </div>
+    </div>
+    <div class="col-drawer" id="drawer-1">
+      <div class="drawer-inner" id="di-1"></div>
+    </div>
+    <div class="col-body" id="body-1"><div class="col-empty">Configure → Generate</div></div>
+    <div class="teacher-panel" id="tp-1">
+      <div class="teacher-header" data-tp="1">
+        <span class="teacher-lbl">Teacher response</span>
+        <div class="teacher-fz" onclick="event.stopPropagation()">
+          <button class="fz-btn tfz-dn" data-col="1">−</button>
+          <span class="fz-val tfz-val" data-col="1">21</span>
+          <button class="fz-btn tfz-up" data-col="1">+</button>
+        </div>
+      </div>
+      <div class="teacher-body" id="tb-1">
+        <textarea class="teacher-ta" id="ta-1" placeholder="Type your model response here..." rows="4"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 2 -->
+  <div class="col" id="col-2">
+    <div class="col-strip">
+      <div class="col-strip-left">
+        <div class="col-dot"></div>
+        <span class="col-summary" id="sum-2">Click ⚙ to configure</span>
+      </div>
+      <div class="col-strip-fz" role="group" aria-label="Font size for brief, focus lists, starters, and hint">
+        <span class="col-strip-fz-lbl">Scaffold</span>
+        <div class="fz-row strip-fz-row">
+          <button type="button" class="fz-btn cfz-dn" data-col="2" title="Smaller brief, focus lists &amp; starters">−</button>
+          <button type="button" class="fz-btn cfz-up" data-col="2" title="Larger brief, focus lists &amp; starters">+</button>
+        </div>
+      </div>
+      <div class="col-strip-right">
+        <button class="btn-regen" data-col="2">↺</button>
+        <button class="icon-btn" data-toggle="2" title="Settings">⚙</button>
+      </div>
+    </div>
+    <div class="col-drawer" id="drawer-2">
+      <div class="drawer-inner" id="di-2"></div>
+    </div>
+    <div class="col-body" id="body-2"><div class="col-empty">Configure → Generate</div></div>
+    <div class="teacher-panel" id="tp-2">
+      <div class="teacher-header" data-tp="2">
+        <span class="teacher-lbl">Teacher response</span>
+        <div class="teacher-fz" onclick="event.stopPropagation()">
+          <button class="fz-btn tfz-dn" data-col="2">−</button>
+          <span class="fz-val tfz-val" data-col="2">21</span>
+          <button class="fz-btn tfz-up" data-col="2">+</button>
+        </div>
+      </div>
+      <div class="teacher-body" id="tb-2">
+        <textarea class="teacher-ta" id="ta-2" placeholder="Type your model response here..." rows="4"></textarea>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const TENETS = [
+  {id:1,  n:'Pronoun & Pointer Openers'},
+  {id:2,  n:'Weak "To Be" Verbs'},
+  {id:3,  n:'Basic Verb Use'},
+  {id:4,  n:'Noun & Verb Repetition'},
+  {id:5,  n:'Weak Adjectives'},
+  {id:6,  n:'Adverb Overuse'},
+  {id:7,  n:'Stop Word Overload'},
+  {id:8,  n:'Sentence Construction'},
+  {id:9,  n:'Literary Devices'},
+  {id:10, n:'Paragraph Cohesion'},
+  {id:11, n:'Narrative Sentence Types (ATFDS)'},
+  {id:12, n:'Author Stems'},
+  {id:13, n:'Information Adders'},
+  {id:14, n:'Filter Words'},
+];
+
+const STAGE_DESC = {
+  who:'introduce character through physical detail, contradiction, behaviour — reveal before naming',
+  where:'establish setting through rich sensory detail, atmosphere, pathetic fallacy — place as mood',
+  what:'the inciting situation — grounded action, the thing that starts the story moving',
+  tension:'rising dread or anticipation — slow time, interiority, physical sensation of fear/excitement',
+  complication:'the unexpected obstacle or twist — shock, disruption, character under pressure',
+  climax:'peak moment — raw, fast, maximum pace, the point of no return',
+  resolution:'aftermath — reflection, consequence, changed state, emotional landing',
+  flashback:'memory intrusion — sensory trigger, tense shift, contrast between past and present'
+};
+
+const TENET_DEFS = `T1: avoid starting sentences with pronouns/pointers (it/he/she/this/they/the/there/then/these/here/too/a/an)
+T2: avoid weak "to be" verbs (was/were/is/are/had/have/been) — use action verbs instead
+T3: replace basic verbs (looked/saw/went/said/walked/made/came/got) with vivid precise ones
+T4: avoid repeating key nouns or verbs in adjacent sentences — use elegant variation
+T5: use double or triple adjectives beyond size/colour — explore texture, mood, feeling, sound, temperature
+T6: replace adverb+weak verb combos with a single strong precise verb
+T7: reduce stop word density — every word earns its place (target 28% by Yr12)
+T8: vary sentence construction — Triple Where, Dual Perspective, Triple Punchers, Quadruple Verb, Role Reversal, Advanced Triple Descriptor, Nested Who, Em-Dash Descriptor, Many/Most, With Double Hand, Personification Descriptor, Adverb Simile Start
+T9: deploy literary devices beyond simile/metaphor: polysyndeton, asyndeton, synecdoche, metonymy, anaphora, epistrophe, oxymoron, paradox, pathetic fallacy, sibilance, tricolon, juxtaposition
+T10: cohesive paragraphs where every sentence serves one clear purpose, connected with purposeful transitions
+T11: narrative paragraphs need a deliberate mix of Action/Thinking/Feeling/Description/Story-Atmosphere/Dialogue sentence types matched to story stage
+T12: use author stems (strong first 5-6 words) to launch powerful sentences the student would never have chosen independently
+T13: extend sentences with information adders — causal (...which caused her to / ...because last time), qualifying (...at least, that's what she told herself), contextual (...something she hadn't done since), contrastive (...despite knowing what it would cost her)
+T14: eliminate filter words (felt/saw/heard/noticed/realised/wondered/seemed/thought) — write through the character, not about them`;
+
+/** Prompt sections — prevent narrative-only defaults when type ≠ narrative */
+function topicFallbackForType(type){
+  if(type==='analytical')return 'No topic set — choose a specific named text (film, novel, play, short story, or poem) and a focused analytical angle (theme, character, technique, director choice, comparison).';
+  if(type==='persuasive')return 'No topic set — choose a concrete persuasive situation: what issue, who is the audience, and what decision or belief is at stake.';
+  return 'No topic set — choose a specific narrative springboard (character, situation, conflict, setting hook).';
+}
+
+function writingTypeRules(type){
+  if(type==='analytical')return`
+WRITING-TYPE LOCK: ANALYTICAL (English school context — mandatory)
+Australian English analytical tasks respond to STUDIED TEXTS (novels, short stories, plays, poetry, film as text). They are NOT creative scene description dressed as analysis.
+
+FORBIDDEN: standalone “vivid” sensory paragraphs about a market/waterfall/generic location presented as the analytical stimulus. That is narrative/description, not analysis.
+
+REQUIRED:
+- Name at least one plausible text (title + form: e.g. novel / film / play) OR clearly frame an extract/stanza/scene FROM a text.
+- instruction must sound analytical: evidence, techniques, author/director intent, how meaning is shaped, compare/contrast — never “describe this scene” as the core task.
+- UPGRADE stimulus: weak STUDENT analytical writing — summary-heavy, vague claims, feature-spotting without effect, missing quotes/references, “the author uses …” without depth.
+- CREATE stimulus: follow EXERCISE-TYPE DIFFERENTIATION above (composition + cue bullets and/or sentence starters; short quote only as framing). Tenets apply to sentence craft WITHIN analytical discourse.
+`;
+  if(type==='persuasive')return`
+WRITING-TYPE LOCK: PERSUASIVE (mandatory)
+Persuasion argues a POSITION for an AUDIENCE with REASONS — not atmosphere-only travel writing.
+
+FORBIDDEN: pure descriptive paragraphs about a beautiful place with no contention, stakes, or call to action (that is narrative/description).
+
+REQUIRED:
+- Stimulus must embed or imply: what belief/action is sought, who is addressed, and why it matters — OR a clear debate motion / opinion column brief / pitch rubric.
+- If description appears, it serves persuasion (evidence, emotional appeal) under a stated or obvious position (e.g. “Why council must fund …”, “Why families should/shouldn’t …”).
+- UPGRADE stimulus: flawed persuasive draft — weak reasons, description substituting for argument, rhetorical questions without support.
+- CREATE stimulus: follow EXERCISE-TYPE DIFFERENTIATION above (rhetorical situation + cues/starters for original persuasive writing). Selected tenets inform HOW they compose.
+`;
+  return`
+WRITING-TYPE LOCK: NARRATIVE (creative)
+Scene, character, conflict, and story-stage craft are appropriate. Use story-stage guidance below.
+`;
+}
+
+/** CREATE vs UPGRADE — models often blur these; rules are explicit. */
+function exerciseTypeDifferentiation(extypes){
+  const hasU = extypes.has('upgrade');
+  const hasC = extypes.has('create');
+  const weakOpeners = 'Do not start any starter with weak pronoun/pointer openers (case-insensitive first word): the, it, a, an, he, she, him, his, her, they, them, this, these, that, those. Avoid expletive "There/Then" as the first word unless "There" is clearly adverbial place ("There, beyond…").';
+  const starterMix = `SENTENCE STARTERS (8 strings; each is ONLY the first 4–5 words of a possible sentence):
+- **At most 4** of the 8 may be **noun-led** subject openers: proper nouns, bare nouns, or article + noun ("Maya hesitated…", "Sparks flew…", "The corridor…", "A whisper…"). Count these toward the max of four.
+- The **other starters (at least 4)** must **not** be noun-first: use **prepositions** (In, On, After, Through, Beyond, Under, Without,…), **adverbs of time or place** (Yesterday, Tonight, Inside, Downstairs,…), **subordinating conjunctions** (Although, When, While, If, After,…), **participial** openers (Frowning, Trapped,…), or **strong verb-first** lines ("Scratch that thought…") — varied and engaging.
+- Across all 8, vary rhythm; never make more than 4 noun-led. ${weakOpeners}`;
+  const createCore = `CREATE (original composition — NOT the same as UPGRADE):
+- Students WRITE new sentence(s) or paragraph(s) from scratch.
+- MANDATORY JSON fields (when CREATE is selected): include "focus_points" and "sentence_starters" as arrays — NOT prose lists inside "stimulus".
+- "focus_points": exactly 5 strings — concise dot-point cues for WHAT to focus on while composing (genre + tenets aligned).
+- "sentence_starters": exactly 8 strings — follow STARTER MIX rules below.
+${starterMix}
+- "stimulus" field: the ONLY text shown in the on-screen Brief card (no separate headline). For CREATE-style scenarios: **maximum 40 words total** — embed the writing invite into the scenario so you do NOT need a separate "Write a…" instruction line. Do NOT duplicate the 5 focus strings or 8 starters here.
+- UI renders focus_points and sentence_starters in two columns — teachers must see exactly 5 + 8 items.`;
+
+  const upgradeCore = `UPGRADE (revision task — NOT the same as CREATE):
+- Stimulus is flawed EXISTING student-style writing only (sentence or paragraph per MODE): authentic tenet flaws for the year band.
+- Student IMPROVES this supplied text. Do NOT make the main stimulus a composition brief with sentence starters — that is CREATE.`;
+
+  if(hasU && !hasC)return upgradeCore + `\n- ONLY UPGRADE is selected — set "focus_points" and "sentence_starters" to null in JSON. Omit CREATE arrays.`;
+  if(hasC && !hasU)return createCore + `\n- ONLY CREATE is selected — stimulus is **max 40 words**; 5 focus_points and 8 sentence_starters in JSON; no full weak paragraph as sole content.`;
+  return `${upgradeCore}\n\n${createCore}\n\nBOTH UPGRADE AND CREATE SELECTED:\n- JSON must include flawed passage in "stimulus" (upgrade) PLUS brief CREATE scenario can precede or follow in stimulus with clear labels OR keep stimulus mainly upgrade block and rely on arrays for CREATE scaffolding.\n- Still output exactly 5 focus_points and 8 sentence_starters for the CREATE composition part; set arrays null only if impossible (prefer always filling them for the composition section).\n- Optional: end stimulus with "Warm-up edit:" one weak sentence for upgrade — stimulus + hint must name both UPGRADE edit and CREATE writing using the arrays.`;
+}
+
+function stimulusFieldHelp(type, topic, yearLabel){
+  const t = topic.trim()||topicFallbackForType(type);
+  const yr = yearLabel;
+  if(type==='analytical'){
+    return`UPGRADE: weak analytical prose in stimulus (may be paragraph-length). CREATE: scenario in stimulus — **max 40 words**, no separate headline; 5 focus_points + 8 sentence_starters in JSON. Topic: ${t}. Band: ${yr}.`;
+  }
+  if(type==='persuasive'){
+    return`UPGRADE: flawed passage in stimulus. CREATE: single brief block — **max 40 words** (scenario + invite); 5 focus_points + 8 sentence_starters in JSON. Topic: ${t}. Band: ${yr}.`;
+  }
+  return`UPGRADE: flawed sample in stimulus (full length). CREATE: brief in stimulus — **max 40 words**; 5 focus_points + 8 sentence_starters in JSON. Topic: ${t}. YEAR-BAND CALIBRATION applies.`;
+}
+
+/** Forces strongly different stimulus sophistication per schooling band (same tenets must still feel different across Yr 5–6 vs 9–12). */
+function yearBandCalibration(year){
+  const bands = {
+    'yr2-4': `YEAR-BAND CALIBRATION (mandatory — applies to stimulus + task voice)
+BRACKET: Year 2–4 (ages ~7–10)
+- Stimulus: very short utterances; concrete everyday words; simple AND compound sentences only; flaws are obvious and primary-level (repetition, tiny vocabulary, basic verbs).
+- Average sentence length ~6–12 words; almost no subordinate clauses.
+- FORBIDDEN here: senior-secondary sentence density, abstract argument, or “essay” tone.`,
+    'yr5-6': `YEAR-BAND CALIBRATION (mandatory — applies to stimulus + task voice)
+BRACKET: Year 5–6 (ages ~10–12)
+- Stimulus: upper-primary voice — mostly simple + compound sentences; familiar vocabulary; flaws feel like strong primary drafts (overuse of really/very/just, plain size/colour adjectives, thin coordination “and then”).
+- Keep imagery limited; emotional stakes simple and stated plainly.
+- FORBIDDEN: prose that could be mistaken for Year 9–12 complexity — no multi-clause sophistication stacks, no faux-literary diction.`,
+    'yr7-8': `YEAR-BAND CALIBRATION (mandatory — applies to stimulus + task voice)
+BRACKET: Year 7–8 (ages ~12–14)
+- Stimulus: lower-secondary voice — clear step-up from primary: mix of compound + some complex sentences; emerging imagery; occasional awkward subordination or vague intensifiers.
+- Flaws are subtler than Yr 5–6 (thin metaphors, loose modifiers, telling-not-showing) but still younger than senior years.
+- MUST read clearly harder than Yr 5–6 and clearly simpler than Yr 9–12 — not interchangeable with either.`,
+    'yr9-12': `YEAR-BAND CALIBRATION (mandatory — applies to stimulus + task voice)
+BRACKET: Year 9–12 (ages ~14–18)
+- Stimulus: senior-secondary voice — dense clauses, abstract nouns, rhetorical reach, mature themes; weaknesses must mimic older drafts (wordiness, redundancy pairs, mixed registers, pretentious diction OR polished-but-empty “essay voice”).
+- Tenet flaws sit inside LONGER, layered sentences — NOT the same short prim patterns used for younger bands.
+- FORBIDDEN: three-line prim paragraphs that differ only by synonym — if Yr 5–6 stimulus could be swapped here unchanged, you have FAILED calibration.
+- Minimum: noticeably higher syntactic density and lexical range than Yr 7–8 for comparable tasks.`
+  };
+  return bands[year] || bands['yr9-12'];
+}
+
+/** Max tenet chips selectable per year band (teacher UI + generation). */
+function maxTenetsForYear(year){
+  const m = { 'yr2-4': 2, 'yr5-6': 3, 'yr7-8': 4, 'yr9-12': 5 };
+  return m[year] != null ? m[year] : 5;
+}
+
+// ── PER-COLUMN STATE ──────────────────────────────────────────────────────────
+const DEFAULTS = [
+  {year:'yr5-6',  type:'narrative',  stage:'who',          tenets:[], modes:new Set(), extypes:new Set(), topic:''},
+  {year:'yr7-8',  type:'narrative',  stage:'tension',      tenets:[], modes:new Set(), extypes:new Set(), topic:''},
+  {year:'yr9-12', type:'persuasive', stage:'who',          tenets:[], modes:new Set(), extypes:new Set(), topic:''},
+];
+
+const colState = DEFAULTS.map(d => ({...d, tenets:[...d.tenets], modes:new Set(d.modes), extypes:new Set(d.extypes)}));
+
+const COL_STATE_KEY = 'aw_col_state';
+let saveColStateTimer;
+function scheduleSaveColState(){
+  clearTimeout(saveColStateTimer);
+  saveColStateTimer = setTimeout(saveColState, 140);
+}
+function saveColState(){
+  try{
+    const payload = colState.map(st=>({
+      year:st.year,type:st.type,stage:st.stage,
+      tenets:[...st.tenets],
+      modes:[...st.modes],
+      extypes:[...st.extypes],
+      topic:typeof st.topic==='string'?st.topic:''
+    }));
+    localStorage.setItem(COL_STATE_KEY, JSON.stringify(payload));
+  }catch(e){}
+}
+function loadColState(){
+  try{
+    const raw = localStorage.getItem(COL_STATE_KEY);
+    if(!raw)return;
+    const arr = JSON.parse(raw);
+    if(!Array.isArray(arr)||arr.length!==3)return;
+    const years = ['yr2-4','yr5-6','yr7-8','yr9-12'];
+    const types = ['narrative','persuasive','analytical'];
+    const stages = ['who','where','what','tension','complication','climax','resolution','flashback'];
+    arr.forEach((saved,i)=>{
+      if(!saved||typeof saved!=='object')return;
+      const st = colState[i];
+      if(years.includes(saved.year)) st.year = saved.year;
+      if(types.includes(saved.type)) st.type = saved.type;
+      if(stages.includes(saved.stage)) st.stage = saved.stage;
+      if(Array.isArray(saved.tenets)){
+        st.tenets = saved.tenets.filter(x=>Number.isInteger(x)&&x>=1&&x<=14);
+        const mx = maxTenetsForYear(st.year);
+        if(st.tenets.length>mx) st.tenets = st.tenets.slice(0,mx);
+      }
+      const ms = Array.isArray(saved.modes)?saved.modes.filter(x=>x==='sentence'||x==='paragraph'):[];
+      const es = Array.isArray(saved.extypes)?saved.extypes.filter(x=>x==='upgrade'||x==='create'):[];
+      st.modes = new Set(ms);
+      st.extypes = new Set(es);
+      if(typeof saved.topic==='string') st.topic = saved.topic;
+    });
+  }catch(e){}
+}
+loadColState();
+
+// ── NAMED PRESETS (saved setups in localStorage) ───────────────────────────────
+const PRESETS_KEY = 'aw_named_presets';
+const PRESET_MAX = 25;
+let suppressPresetChange = false;
+function loadPresetsList(){
+  try{
+    const raw = localStorage.getItem(PRESETS_KEY);
+    if(!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function savePresetsList(arr){ try{ localStorage.setItem(PRESETS_KEY, JSON.stringify(arr)); }catch(e){} }
+function clampFzPx(n){
+  const x = typeof n==='number' ? n : parseInt(n,10);
+  if(!Number.isFinite(x)) return null;
+  return Math.min(60, Math.max(15, x));
+}
+function capturePresetSnapshot(){
+  return {
+    columns: colState.map(st=>({
+      year: st.year, type: st.type, stage: st.stage,
+      tenets: [...st.tenets],
+      modes: [...st.modes],
+      extypes: [...st.extypes],
+      topic: typeof st.topic === 'string' ? st.topic : ''
+    })),
+    fonts: { gFz, cFz: [...cFz], tFz: [...tFz] },
+    teacherDrafts: [0,1,2].map(i=>{
+      const ta = document.getElementById(`ta-${i}`);
+      return ta ? ta.value : '';
+    }),
+    ui: {
+      drawersOpen: [0,1,2].map(i=>document.getElementById(`drawer-${i}`).classList.contains('open')),
+      teacherOpen: [0,1,2].map(i=>document.getElementById(`tb-${i}`).classList.contains('open'))
+    }
+  };
+}
+function assignColumnFromSaved(saved,i){
+  const st = colState[i];
+  const years = ['yr2-4','yr5-6','yr7-8','yr9-12'];
+  const types = ['narrative','persuasive','analytical'];
+  const stages = ['who','where','what','tension','complication','climax','resolution','flashback'];
+  if(!saved||typeof saved!=='object') return;
+  if(years.includes(saved.year)) st.year = saved.year;
+  if(types.includes(saved.type)) st.type = saved.type;
+  if(stages.includes(saved.stage)) st.stage = saved.stage;
+  if(Array.isArray(saved.tenets)){
+    st.tenets = saved.tenets.filter(x=>Number.isInteger(x)&&x>=1&&x<=14);
+    const mx = maxTenetsForYear(st.year);
+    if(st.tenets.length > mx) st.tenets = st.tenets.slice(0, mx);
+  }
+  const ms = Array.isArray(saved.modes) ? saved.modes.filter(x=>x==='sentence'||x==='paragraph') : [];
+  const es = Array.isArray(saved.extypes) ? saved.extypes.filter(x=>x==='upgrade'||x==='create') : [];
+  st.modes = new Set(ms);
+  st.extypes = new Set(es);
+  if(typeof saved.topic === 'string') st.topic = saved.topic;
+}
+function applyPresetSnapshot(snap){
+  if(!snap||typeof snap!=='object') return;
+  const cols = snap.columns;
+  if(!Array.isArray(cols)||cols.length!==3) return;
+  cols.forEach((saved,i)=>assignColumnFromSaved(saved,i));
+  if(snap.fonts && typeof snap.fonts === 'object'){
+    const gf = clampFzPx(snap.fonts.gFz);
+    if(gf !== null){
+      gFz = gf;
+      const gv = document.getElementById('gfz-val');
+      if(gv) gv.textContent = String(gFz);
+      saveGfz();
+    }
+    [0,1,2].forEach(i=>{
+      const cf = clampFzPx(Array.isArray(snap.fonts.cFz) ? snap.fonts.cFz[i] : null);
+      const tf = clampFzPx(Array.isArray(snap.fonts.tFz) ? snap.fonts.tFz[i] : null);
+      if(cf !== null){ cFz[i] = cf; applyColFz(i); }
+      if(tf !== null){ tFz[i] = tf; applyTeacherFz(i); }
+    });
+  }
+  [0,1,2].forEach(i=>{
+    buildDrawer(i);
+    applyTeacherPanelMode(i);
+    updateSummary(i);
+  });
+  syncGlobalBarFromCol0();
+  if(Array.isArray(snap.teacherDrafts)){
+    snap.teacherDrafts.forEach((txt,i)=>{
+      if(i > 2) return;
+      const ta = document.getElementById(`ta-${i}`);
+      if(!ta) return;
+      ta.value = txt != null ? String(txt) : '';
+      try{ localStorage.setItem(`aw_ta_${i}`, ta.value); }catch(e){}
+    });
+  }
+  if(snap.ui && typeof snap.ui === 'object'){
+    [0,1,2].forEach(i=>{
+      const op = snap.ui.drawersOpen && typeof snap.ui.drawersOpen[i] === 'boolean' ? snap.ui.drawersOpen[i] : null;
+      if(op !== null){
+        const d = document.getElementById(`drawer-${i}`);
+        const btn = document.querySelector(`[data-toggle="${i}"]`);
+        if(d && btn){
+          d.classList.toggle('open', op);
+          btn.classList.toggle('active', op);
+          try{ localStorage.setItem(`aw_drawer_${i}`, op ? '1' : '0'); }catch(e){}
+        }
+      }
+      const to = snap.ui.teacherOpen && typeof snap.ui.teacherOpen[i] === 'boolean' ? snap.ui.teacherOpen[i] : null;
+      if(to !== null){
+        const tb = document.getElementById(`tb-${i}`);
+        if(tb){
+          tb.classList.toggle('open', to);
+          try{ localStorage.setItem(`aw_teacher_open_${i}`, to ? '1' : '0'); }catch(e){}
+        }
+      }
+    });
+  }
+  scheduleSaveColState();
+}
+function refreshPresetSelect(selectedId){
+  const sel = document.getElementById('preset-select');
+  const delBtn = document.getElementById('preset-delete');
+  if(!sel) return;
+  suppressPresetChange = true;
+  let presets = loadPresetsList().slice().sort((a,b)=>{
+    const ta = new Date(a.savedAt||0).getTime();
+    const tb = new Date(b.savedAt||0).getTime();
+    return tb - ta;
+  });
+  sel.innerHTML = '<option value="">— Load a saved setup —</option>';
+  presets.forEach(p=>{
+    if(!p||!p.id) return;
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    const d = p.savedAt ? new Date(p.savedAt) : null;
+    const short = d && !isNaN(d.getTime())
+      ? d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
+      : '';
+    opt.textContent = short ? `${p.name} · ${short}` : (p.name || 'Untitled');
+    sel.appendChild(opt);
+  });
+  if(selectedId && [...sel.options].some(o=>o.value===selectedId)) sel.value = selectedId;
+  else sel.value = '';
+  if(delBtn) delBtn.disabled = !sel.value;
+  suppressPresetChange = false;
+}
+function initPresets(){
+  const sel = document.getElementById('preset-select');
+  const btnSave = document.getElementById('preset-save');
+  const btnDel = document.getElementById('preset-delete');
+  if(!sel||!btnSave||!btnDel) return;
+  refreshPresetSelect();
+  sel.addEventListener('change',()=>{
+    if(suppressPresetChange) return;
+    const id = sel.value;
+    btnDel.disabled = !id;
+    if(!id) return;
+    const p = loadPresetsList().find(x=>x.id===id);
+    if(p && p.snapshot) applyPresetSnapshot(p.snapshot);
+  });
+  btnSave.addEventListener('click',()=>{
+    const name = prompt('Name this setup (all columns, fonts, teacher drafts, panel open/closed):','');
+    if(name === null) return;
+    const trimmed = name.trim();
+    if(!trimmed){ alert('Please enter a short name.'); return; }
+    let presets = loadPresetsList();
+    if(presets.length >= PRESET_MAX){
+      alert(`Maximum ${PRESET_MAX} saved setups. Delete one first.`);
+      return;
+    }
+    const id = 'p_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
+    presets.push({
+      id,
+      name: trimmed,
+      savedAt: new Date().toISOString(),
+      snapshot: capturePresetSnapshot()
+    });
+    savePresetsList(presets);
+    refreshPresetSelect(id);
+    btnDel.disabled = false;
+  });
+  btnDel.addEventListener('click',()=>{
+    const id = sel.value;
+    if(!id) return;
+    if(!confirm('Delete this saved setup?')) return;
+    const next = loadPresetsList().filter(p=>p.id!==id);
+    savePresetsList(next);
+    refreshPresetSelect('');
+  });
+}
+
+// font sizes
+let gFz = parseInt(localStorage.getItem('aw_gfz')||'21');
+const cFz  = [0,1,2].map(i=>parseInt(localStorage.getItem(`aw_cfz_${i}`)||'18'));
+const tFz  = [0,1,2].map(i=>parseInt(localStorage.getItem(`aw_tfz_${i}`)||'21'));
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+let collapseTopBar = ()=>{};
+document.addEventListener('DOMContentLoaded', ()=>{
+  initApiKey();
+  initTheme();
+  initTopbarCollapse();
+  initTimer();
+  initGlobalFz();
+  initGlobalBar();
+  initPresets();
+  [0,1,2].forEach(i=>{
+    buildDrawer(i);
+    applyColFz(i);
+    applyTeacherFz(i);
+    updateSummary(i);
+  });
+  [0,1,2].forEach(i=>{
+    const d = document.getElementById(`drawer-${i}`);
+    const ic = document.querySelector(`[data-toggle="${i}"]`);
+    const stored = localStorage.getItem(`aw_drawer_${i}`);
+    const open = stored===null ? true : stored==='1';
+    d.classList.toggle('open',open);
+    ic.classList.toggle('active',open);
+  });
+  initTeacherPanels();
+  initRegenButtons();
+  initColStripFz();
+  document.getElementById('btn-gen').addEventListener('click', generateAll);
+
+  // drawer toggles
+  document.querySelectorAll('[data-toggle]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const i = parseInt(btn.dataset.toggle);
+      const d = document.getElementById(`drawer-${i}`);
+      const open = d.classList.toggle('open');
+      btn.classList.toggle('active', open);
+      try{ localStorage.setItem(`aw_drawer_${i}`,open?'1':'0'); }catch(e){}
+    });
+  });
+});
+
+// ── THEME (dark default + student-portal style light) ─────────────────────────
+function initTheme(){
+  const root = document.documentElement;
+  const btn = document.getElementById('btn-theme');
+  const KEY = 'aw_theme';
+  function paint(){
+    const light = root.getAttribute('data-theme') === 'light';
+    btn.setAttribute('aria-pressed', light ? 'true' : 'false');
+    btn.querySelector('.th-ico').textContent = light ? '🌙' : '☀️';
+    btn.querySelector('.th-txt').textContent = light ? 'Dark' : 'Light';
+    btn.title = light ? 'Switch to dark mode' : 'Switch to light mode (lavender / violet)';
+  }
+  function apply(theme){
+    root.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
+    try{ localStorage.setItem(KEY, root.getAttribute('data-theme')); }catch(e){}
+    paint();
+  }
+  let initial = 'dark';
+  try{
+    const s = localStorage.getItem(KEY);
+    if(s === 'light' || s === 'dark') initial = s;
+  }catch(e){}
+  apply(initial);
+  btn.addEventListener('click', ()=>{
+    apply(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+  });
+}
+
+// ── COLLAPSIBLE TOP HEADER ────────────────────────────────────────────────────
+function initTopbarCollapse(){
+  const shell = document.getElementById('topbar-shell');
+  const btn = document.getElementById('btn-topbar-toggle');
+  const chev = btn.querySelector('.tbb-chevron');
+  const lbl = btn.querySelector('.tbb-label');
+  function sync(collapsed){
+    shell.classList.toggle('collapsed',collapsed);
+    btn.setAttribute('aria-expanded',collapsed?'false':'true');
+    chev.textContent=collapsed?'▼':'▲';
+    lbl.textContent=collapsed?'Show controls':'Hide controls';
+    localStorage.setItem('aw_topbar_collapsed',collapsed?'1':'0');
+  }
+  btn.addEventListener('click',()=>sync(!shell.classList.contains('collapsed')));
+  collapseTopBar=()=>sync(true);
+  sync(localStorage.getItem('aw_topbar_collapsed')==='1');
+}
+
+// ── HANDLE TIMER (centre row: set length with ±, click time to start/pause) ───
+const TIMER_STEP = 60;
+const TIMER_MIN = 60;
+const TIMER_MAX = 7200;
+let timerSetSec = 300;
+let timerRemainSec = 300;
+let timerRunning = false;
+let timerTickId = null;
+
+function formatTimer(sec){
+  const s = Math.max(0, Math.floor(sec));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return String(m).padStart(2,'0')+':'+String(r).padStart(2,'0');
+}
+
+function saveTimerSet(){
+  try{ localStorage.setItem('aw_timer_set_sec', String(timerSetSec)); }catch(e){}
+}
+
+function paintTimerUi(){
+  const row = document.getElementById('topbar-handle');
+  const el = document.getElementById('timer-display');
+  if(!el || !row) return;
+  el.textContent = formatTimer(timerRemainSec);
+  row.classList.toggle('timer-running', timerRunning);
+}
+
+function stopTimerTick(){
+  if(timerTickId != null){
+    clearInterval(timerTickId);
+    timerTickId = null;
+  }
+}
+
+function tickTimer(){
+  if(!timerRunning) return;
+  timerRemainSec -= 1;
+  if(timerRemainSec <= 0){
+    timerRemainSec = 0;
+    timerRunning = false;
+    stopTimerTick();
+    const row = document.getElementById('topbar-handle');
+    if(row){
+      row.classList.add('timer-done');
+      setTimeout(()=>row.classList.remove('timer-done'), 1900);
+    }
+  }
+  paintTimerUi();
+}
+
+function initTimer(){
+  try{
+    const raw = parseInt(localStorage.getItem('aw_timer_set_sec')||'300', 10);
+    if(Number.isFinite(raw)) timerSetSec = Math.min(TIMER_MAX, Math.max(TIMER_MIN, raw));
+  }catch(e){}
+  timerRemainSec = timerSetSec;
+
+  const display = document.getElementById('timer-display');
+  const btnDn = document.getElementById('timer-dn');
+  const btnUp = document.getElementById('timer-up');
+  if(!display || !btnDn || !btnUp) return;
+
+  paintTimerUi();
+
+  btnDn.addEventListener('click', ()=>{
+    if(timerRunning){
+      timerRemainSec = Math.max(0, timerRemainSec - TIMER_STEP);
+      paintTimerUi();
+      return;
+    }
+    if(timerRemainSec <= 0){
+      timerSetSec = Math.max(TIMER_MIN, timerSetSec - TIMER_STEP);
+      saveTimerSet();
+      paintTimerUi();
+      return;
+    }
+    if(timerRemainSec < timerSetSec){
+      timerRemainSec = Math.max(0, timerRemainSec - TIMER_STEP);
+      paintTimerUi();
+      return;
+    }
+    timerSetSec = Math.max(TIMER_MIN, timerSetSec - TIMER_STEP);
+    timerRemainSec = timerSetSec;
+    saveTimerSet();
+    paintTimerUi();
+  });
+
+  btnUp.addEventListener('click', ()=>{
+    if(timerRunning){
+      timerRemainSec = Math.min(TIMER_MAX, timerRemainSec + TIMER_STEP);
+      paintTimerUi();
+      return;
+    }
+    if(timerRemainSec <= 0){
+      timerRemainSec = timerSetSec > 0 ? timerSetSec : TIMER_MIN;
+      paintTimerUi();
+      return;
+    }
+    if(timerRemainSec < timerSetSec){
+      timerRemainSec = Math.min(TIMER_MAX, timerRemainSec + TIMER_STEP);
+      paintTimerUi();
+      return;
+    }
+    timerSetSec = Math.min(TIMER_MAX, timerSetSec + TIMER_STEP);
+    timerRemainSec = timerSetSec;
+    saveTimerSet();
+    paintTimerUi();
+  });
+
+  display.addEventListener('click', (ev)=>{
+    if(ev.shiftKey){
+      timerRemainSec = timerSetSec;
+      if(timerRunning){
+        timerRunning = false;
+        stopTimerTick();
+      }
+      paintTimerUi();
+      return;
+    }
+    if(timerRunning){
+      timerRunning = false;
+      stopTimerTick();
+      paintTimerUi();
+      return;
+    }
+    if(timerRemainSec <= 0) return;
+    timerRunning = true;
+    stopTimerTick();
+    timerTickId = setInterval(tickTimer, 1000);
+    paintTimerUi();
+  });
+}
+
+// ── API KEY ───────────────────────────────────────────────────────────────────
+function initApiKey(){
+  const inp = document.getElementById('api-key');
+  const st  = document.getElementById('api-st');
+  const saved = localStorage.getItem('aw_key');
+  if(saved){inp.value=saved;setSt(saved.startsWith('sk-ant')&&saved.length>20);}
+  inp.addEventListener('input',()=>{
+    localStorage.setItem('aw_key',inp.value.trim());
+    setSt(inp.value.trim().startsWith('sk-ant')&&inp.value.trim().length>20);
+  });
+  function setSt(ok){st.textContent=ok?'✓ ready':'not set';st.className=ok?'api-ok':'api-no';}
+}
+
+// ── FONT SIZE — GLOBAL ────────────────────────────────────────────────────────
+function initGlobalFz(){
+  const val = document.getElementById('gfz-val');
+  val.textContent = gFz;
+  document.getElementById('gfz-up').addEventListener('click',()=>{gFz=Math.min(60,gFz+1);saveGfz();pushGlobal();});
+  document.getElementById('gfz-dn').addEventListener('click',()=>{gFz=Math.max(15,gFz-1);saveGfz();pushGlobal();});
+  document.getElementById('gfz-reset').addEventListener('click',()=>{gFz=21;saveGfz();pushGlobal(true);});
+}
+function pushGlobal(reset){
+  document.getElementById('gfz-val').textContent=gFz;
+  [0,1,2].forEach(i=>{
+    if(reset) tFz[i]=21;
+    else tFz[i]=gFz;
+    applyTeacherFz(i);
+  });
+}
+function saveGfz(){localStorage.setItem('aw_gfz',gFz);}
+
+// ── GLOBAL QUICK BAR (syncs all columns; each column keeps its year band) ─────
+let gbTopicDebounce;
+function initGlobalBar(){
+  const tRow = document.getElementById('gb-t-row');
+  TENETS.forEach(t=>{
+    const b = mk('button','gb-ten');
+    b.type='button';
+    b.dataset.tid=String(t.id);
+    b.textContent='T'+t.id;
+    b.title=t.n;
+    b.addEventListener('click',()=>{b.classList.toggle('on');applyGlobalFromBar();});
+    tRow.appendChild(b);
+  });
+  document.querySelectorAll('[data-gb-type]').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+      document.querySelectorAll('[data-gb-type]').forEach(c=>c.classList.remove('on'));
+      chip.classList.add('on');
+      const nar = chip.dataset.gbType==='narrative';
+      document.getElementById('gb-stage-wrap').style.display = nar?'':'none';
+      applyGlobalFromBar();
+    });
+  });
+  document.getElementById('gb-stage').addEventListener('change',applyGlobalFromBar);
+  document.querySelectorAll('[data-gb-mode]').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+      const on = chip.classList.contains('on');
+      if(on){
+        if(document.querySelectorAll('[data-gb-mode].on').length<=1)return;
+        chip.classList.remove('on');
+      } else chip.classList.add('on');
+      applyGlobalFromBar();
+    });
+  });
+  document.querySelectorAll('[data-gb-ex]').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+      const on = chip.classList.contains('on');
+      if(on){
+        if(document.querySelectorAll('[data-gb-ex].on').length<=1)return;
+        chip.classList.remove('on');
+      } else chip.classList.add('on');
+      applyGlobalFromBar();
+    });
+  });
+  const topInp = document.getElementById('gb-topic');
+  topInp.addEventListener('input',()=>{
+    topInp.classList.toggle('gb-topic-on',!!topInp.value.trim());
+    clearTimeout(gbTopicDebounce);
+    gbTopicDebounce = setTimeout(applyGlobalFromBar,140);
+  });
+  syncGlobalBarFromCol0();
+}
+function syncGlobalBarFromCol0(){
+  const st = colState[0];
+  document.querySelectorAll('[data-gb-type]').forEach(c=>c.classList.toggle('on',c.dataset.gbType===st.type));
+  if(!document.querySelector('[data-gb-type].on')){
+    const fb = document.querySelector('[data-gb-type="narrative"]');
+    if(fb) fb.classList.add('on');
+  }
+  document.getElementById('gb-stage').value = st.stage;
+  document.getElementById('gb-stage-wrap').style.display = st.type==='narrative'?'':'none';
+  document.querySelectorAll('[data-gb-mode]').forEach(c=>c.classList.toggle('on',st.modes.has(c.dataset.gbMode)));
+  document.querySelectorAll('[data-gb-ex]').forEach(c=>c.classList.toggle('on',st.extypes.has(c.dataset.gbEx)));
+  document.querySelectorAll('.gb-ten').forEach(b=>{
+    const id = parseInt(b.dataset.tid,10);
+    b.classList.toggle('on',st.tenets.includes(id));
+  });
+  const ti = document.getElementById('gb-topic');
+  ti.value = st.topic||'';
+  ti.classList.toggle('gb-topic-on',!!ti.value.trim());
+}
+function applyGlobalFromBar(){
+  const typeEl = document.querySelector('[data-gb-type].on');
+  const type = typeEl ? typeEl.dataset.gbType : 'narrative';
+  const stage = document.getElementById('gb-stage').value;
+  const topic = document.getElementById('gb-topic').value;
+  const modes = new Set();
+  document.querySelectorAll('[data-gb-mode].on').forEach(el=>modes.add(el.dataset.gbMode));
+  const extypes = new Set();
+  document.querySelectorAll('[data-gb-ex].on').forEach(el=>extypes.add(el.dataset.gbEx));
+  const tenetIds = TENETS.map(t=>t.id).filter(id=>
+    document.querySelector(`.gb-ten[data-tid="${id}"]`)?.classList.contains('on')
+  );
+  [0,1,2].forEach(i=>{
+    colState[i].type = type;
+    colState[i].stage = stage;
+    colState[i].topic = topic;
+    colState[i].modes = new Set(modes);
+    colState[i].extypes = new Set(extypes);
+    const mx = maxTenetsForYear(colState[i].year);
+    colState[i].tenets = tenetIds.slice(0,mx);
+    buildDrawer(i);
+    updateSummary(i);
+    applyTeacherPanelMode(i);
+  });
+}
+
+// ── FONT SIZE — COLUMN ────────────────────────────────────────────────────────
+function applyColFz(i){
+  document.getElementById(`col-${i}`).style.setProperty('--col-fz',cFz[i]+'px');
+  localStorage.setItem(`aw_cfz_${i}`,cFz[i]);
+}
+function applyTeacherFz(i){
+  document.getElementById(`ta-${i}`).style.fontSize = tFz[i]+'px';
+  document.querySelectorAll(`.tfz-val[data-col="${i}"]`).forEach(el=>el.textContent=tFz[i]);
+  localStorage.setItem(`aw_tfz_${i}`,tFz[i]);
+}
+function applyTeacherPanelMode(i){
+  const hasPara = colState[i].modes.has('paragraph');
+  document.getElementById(`tp-${i}`).classList.toggle('teacher-para',hasPara);
+}
+
+// ── TEACHER PANELS ────────────────────────────────────────────────────────────
+let taSaveTimers={};
+function scheduleSaveTeacherTa(i,val){
+  clearTimeout(taSaveTimers[i]);
+  taSaveTimers[i]=setTimeout(()=>{
+    try{ localStorage.setItem(`aw_ta_${i}`,val); }catch(e){}
+  },380);
+}
+function initTeacherPanels(){
+  document.querySelectorAll('.teacher-header').forEach(h=>{
+    const i = h.dataset.tp;
+    const tb = document.getElementById(`tb-${i}`);
+    if(localStorage.getItem(`aw_teacher_open_${i}`)==='1') tb.classList.add('open');
+    h.addEventListener('click',()=>{
+      tb.classList.toggle('open');
+      try{ localStorage.setItem(`aw_teacher_open_${i}`,tb.classList.contains('open')?'1':'0'); }catch(e){}
+    });
+  });
+  document.querySelectorAll('.tfz-up').forEach(b=>b.addEventListener('click',()=>{
+    const i=parseInt(b.dataset.col);tFz[i]=Math.min(60,tFz[i]+1);applyTeacherFz(i);
+  }));
+  document.querySelectorAll('.tfz-dn').forEach(b=>b.addEventListener('click',()=>{
+    const i=parseInt(b.dataset.col);tFz[i]=Math.max(15,tFz[i]-1);applyTeacherFz(i);
+  }));
+  document.querySelectorAll('.teacher-ta').forEach(ta=>{
+    const i = parseInt(ta.id.replace(/\D/g,''),10);
+    try{
+      const v = localStorage.getItem(`aw_ta_${i}`);
+      if(v!=null) ta.value = v;
+    }catch(e){}
+    ta.addEventListener('input',()=>scheduleSaveTeacherTa(i,ta.value));
+  });
+}
+
+// ── COLUMN STRIP FONT (--col-fz on #col-N: brief + create lists + hint) ───────
+function initColStripFz(){
+  document.querySelectorAll('.cfz-dn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const i=parseInt(b.dataset.col,10);
+      cFz[i]=Math.max(15,cFz[i]-1);
+      applyColFz(i);
+    });
+  });
+  document.querySelectorAll('.cfz-up').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const i=parseInt(b.dataset.col,10);
+      cFz[i]=Math.min(60,cFz[i]+1);
+      applyColFz(i);
+    });
+  });
+}
+
+// ── REGEN ─────────────────────────────────────────────────────────────────────
+function initRegenButtons(){
+  document.querySelectorAll('.btn-regen').forEach(b=>{
+    b.addEventListener('click',()=>{
+      if(!validateApi()) return;
+      generateCol(parseInt(b.dataset.col));
+    });
+  });
+}
+
+// ── BUILD DRAWER ──────────────────────────────────────────────────────────────
+function buildDrawer(i){
+  const st = colState[i];
+  const di = document.getElementById(`di-${i}`);
+  di.innerHTML = '';
+
+  // Row 1: year, type, stage, topic
+  const r1 = mk('div','dr-row');
+
+  // year
+  const yf = mk('div','dr-field');
+  yf.appendChild(mkLbl('Year Level'));
+  const ySel = mkSel([
+    ['yr2-4','Yr 2–4'],['yr5-6','Yr 5–6'],['yr7-8','Yr 7–8'],['yr9-12','Yr 9–12']
+  ], st.year);
+  ySel.addEventListener('change',()=>{
+    st.year=ySel.value;
+    const mx=maxTenetsForYear(st.year);
+    if(st.tenets.length>mx) st.tenets=st.tenets.slice(0,mx);
+    buildDrawer(i);
+    updateSummary(i);
+  });
+  yf.appendChild(ySel); r1.appendChild(yf);
+
+  // type
+  const tf = mk('div','dr-field');
+  tf.appendChild(mkLbl('Writing Type'));
+  const tSel = mkSel([
+    ['narrative','Narrative'],['persuasive','Persuasive'],['analytical','Analytical']
+  ], st.type);
+  const stageFld = mk('div','dr-field');
+  tSel.addEventListener('change',()=>{
+    st.type=tSel.value;
+    stageFld.style.display = st.type==='narrative'?'flex':'none';
+    updateSummary(i);
+  });
+  tf.appendChild(tSel); r1.appendChild(tf);
+
+  // stage
+  stageFld.style.display = st.type==='narrative'?'flex':'none';
+  stageFld.style.flexDirection='column'; stageFld.style.gap='5px';
+  stageFld.appendChild(mkLbl('Story Stage'));
+  const sgSel = mkSel([
+    ['who','WHO'],['where','WHERE'],['what','WHAT'],['tension','TENSION'],
+    ['complication','COMPLICATION'],['climax','CLIMAX'],['resolution','RESOLUTION'],['flashback','FLASHBACK']
+  ], st.stage);
+  sgSel.addEventListener('change',()=>{st.stage=sgSel.value;updateSummary(i);});
+  stageFld.appendChild(sgSel); r1.appendChild(stageFld);
+
+  // topic
+  const topFld = mk('div','dr-field');
+  topFld.appendChild(mkLbl('Topic / Theme'));
+  const topInp = mk('input','dr-input');
+  topInp.type='text'; topInp.placeholder='storm, heist, lost dog...';
+  topInp.value = st.topic||'';
+  const syncTopicInp = ()=>{ topInp.classList.toggle('dr-input-on', !!topInp.value.trim()); };
+  syncTopicInp();
+  topInp.addEventListener('input',()=>{ st.topic=topInp.value; syncTopicInp(); updateSummary(i); });
+  topFld.appendChild(topInp); r1.appendChild(topFld);
+  di.appendChild(r1);
+
+  // Row 2: mode/type chips
+  const r2 = mk('div','dr-row');
+  const mf = mk('div','dr-field');
+  mf.appendChild(mkLbl('Mode'));
+  const mRow = mk('div'); mRow.style.display='flex'; mRow.style.gap='6px'; mRow.style.flexWrap='wrap';
+  [['sentence','Sentence'],['paragraph','Paragraph']].forEach(([v,l])=>{
+    const c=mk('span','mode-chip');c.textContent=l;
+    if(st.modes.has(v))c.classList.add('on');
+    c.addEventListener('click',()=>{toggleSet(st.modes,v,c);applyTeacherPanelMode(i);scheduleSaveColState();});
+    mRow.appendChild(c);
+  });
+  mf.appendChild(mRow); r2.appendChild(mf);
+  applyTeacherPanelMode(i);
+
+  const ef = mk('div','dr-field');
+  ef.appendChild(mkLbl('Exercise Type'));
+  const eRow = mk('div'); eRow.style.display='flex'; eRow.style.gap='6px'; eRow.style.flexWrap='wrap';
+  [['upgrade','Upgrade'],['create','Create']].forEach(([v,l])=>{
+    const c=mk('span','mode-chip');c.textContent=l;
+    if(st.extypes.has(v))c.classList.add('on');
+    c.addEventListener('click',()=>{toggleSet(st.extypes,v,c);scheduleSaveColState();});
+    eRow.appendChild(c);
+  });
+  ef.appendChild(eRow); r2.appendChild(ef);
+  di.appendChild(r2);
+
+  // Row 3: tenets
+  const tMax = maxTenetsForYear(st.year);
+  if(st.tenets.length>tMax) st.tenets=st.tenets.slice(0,tMax);
+  const r3 = mk('div','dr-field');
+  const tNote = mk('span','tenet-note'); tNote.id=`tnote-${i}`;
+  tNote.textContent = st.tenets.length+' selected (max '+tMax+')';
+  const tHead = mk('div'); tHead.style.display='flex'; tHead.style.justifyContent='space-between';
+  const tLbl = mkLbl('Tenets'); tHead.append(tLbl,tNote); r3.appendChild(tHead);
+
+  const tGrid = mk('div','tenet-grid');
+  // two columns of chips
+  const tCols = mk('div'); tCols.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:5px;';
+  TENETS.forEach(t=>{
+    const c=mk('button','tenet-chip');
+    c.textContent=`T${t.id} — ${t.n}`;
+    if(st.tenets.includes(t.id))c.classList.add('on');
+    if(!st.tenets.includes(t.id)&&st.tenets.length>=tMax)c.classList.add('disabled');
+    c.addEventListener('click',()=>{
+      if(st.tenets.includes(t.id)){
+        st.tenets=st.tenets.filter(x=>x!==t.id);
+        c.classList.remove('on');
+      } else {
+        if(st.tenets.length>=tMax)return;
+        st.tenets.push(t.id);c.classList.add('on');
+      }
+      tNote.textContent=st.tenets.length+' selected (max '+tMax+')';
+      updateSummary(i);
+      // update disabled state
+      tCols.querySelectorAll('.tenet-chip').forEach(ch=>{
+        const tid=parseInt(ch.textContent.match(/T(\d+)/)[1]);
+        if(!st.tenets.includes(tid)){
+          ch.classList.toggle('disabled',st.tenets.length>=tMax);
+        }
+      });
+    });
+    tCols.appendChild(c);
+  });
+  tGrid.appendChild(tCols);
+  r3.appendChild(tGrid);
+  di.appendChild(r3);
+
+  // Generate button
+  const gBtn = mk('button','dr-gen-btn');
+  gBtn.textContent=`⚡ Generate Col ${i+1}`;
+  gBtn.addEventListener('click',()=>{if(!validateApi())return;generateCol(i);});
+  di.appendChild(gBtn);
+  if(i===0) syncGlobalBarFromCol0();
+}
+
+// ── SUMMARY LINE ─────────────────────────────────────────────────────────────
+function updateSummary(i){
+  const st = colState[i];
+  const yr = {
+    'yr2-4':'Yr 2–4','yr5-6':'Yr 5–6','yr7-8':'Yr 7–8','yr9-12':'Yr 9–12'
+  }[st.year];
+  const type = st.type.charAt(0).toUpperCase()+st.type.slice(1);
+  const stage = st.type==='narrative' ? ` · ${st.stage.toUpperCase()}` : '';
+  const tn = st.tenets.length ? ' · T'+st.tenets.join(' T') : ' · no tenets';
+  const top = st.topic ? ` · "${st.topic}"` : '';
+  document.getElementById(`sum-${i}`).textContent = `${yr} · ${type}${stage}${tn}${top}`;
+  scheduleSaveColState();
+}
+
+// ── GENERATE ──────────────────────────────────────────────────────────────────
+function closeDrawer(i){
+  const d=document.getElementById(`drawer-${i}`);
+  const btn=document.querySelector(`[data-toggle="${i}"]`);
+  if(d)d.classList.remove('open');
+  if(btn)btn.classList.remove('active');
+}
+function closeAllDrawers(){[0,1,2].forEach(closeDrawer);}
+
+function generateAll(){
+  if(!validateApi()) return;
+  closeAllDrawers();
+  collapseTopBar();
+  [0,1,2].forEach(i=>generateCol(i));
+}
+
+async function generateCol(idx){
+  const apiKey = document.getElementById('api-key').value.trim();
+  const st     = colState[idx];
+
+  if(!st.modes.size){
+    setColError(idx,'Select at least one mode (Sentence and/or Paragraph) in ⚙ settings.');return;
+  }
+  if(!st.extypes.size){
+    setColError(idx,'Select at least one exercise type (Upgrade and/or Create) in ⚙ settings.');return;
+  }
+  if(!st.tenets.length){
+    setColError(idx,'Select at least one tenet in ⚙ settings.');return;
+  }
+
+  closeDrawer(idx);
+
+  const yearLabel = {
+    'yr2-4':'Year 2–4 (age 7–10)',
+    'yr5-6':'Year 5–6 (age 10–12)',
+    'yr7-8':'Year 7–8 (age 12–14)',
+    'yr9-12':'Year 9–12 (age 14–18)'
+  }[st.year];
+
+  const tenetList = st.tenets.map(id=>{
+    const t=TENETS.find(x=>x.id===id);
+    return `Tenet ${t.id}: ${t.n}`;
+  }).join(', ');
+
+  const stageCtx = st.type==='narrative'
+    ? `Narrative stage: ${st.stage.toUpperCase()} — ${STAGE_DESC[st.stage]}.` : '';
+
+  const topicTrim = (st.topic||'').trim();
+  const topicDisplay = topicTrim || topicFallbackForType(st.type);
+  const narrativeBlock = st.type==='narrative'?`
+NARRATIVE FRAMEWORK:
+WHO=character intro via physical detail/behaviour/contradiction — ideally before naming
+WHERE=setting via sensory detail, atmosphere, pathetic fallacy — place as mood
+WHAT=inciting situation, action-driven, grounded
+TENSION=rising dread/anticipation, interiority, slowed time, ATFDS sentence mix
+COMPLICATION=unexpected twist/obstacle, shock action, short punchy sentences
+CLIMAX=peak moment, maximum pace, raw emotion — the point of no return
+RESOLUTION=aftermath, reflection, consequence, changed state
+FLASHBACK=memory intrusion, tense shift, sensory trigger, contrast with present
+ATFDS SENTENCE TYPES: Action / Thinking / Feeling / Description / Story-Atmosphere / Dialogue
+`:'';
+
+  const modes = [...st.modes].join(' and ');
+  const modeScope = (()=>{
+    const s=st.modes.has('sentence'), p=st.modes.has('paragraph');
+    if(s&&p)return 'Both modes selected — stimulus and task may include sentence- and/or paragraph-level scope; state clearly what length students produce.';
+    if(s)return 'Sentence mode only — main student writing scope is one or two sentences (upgrade passage or composed lines), except starter lists in CREATE.';
+    if(p)return 'Paragraph mode only — upgrade stimulus should be a short paragraph; CREATE should ask for a paragraph-length response unless using only bullet cues.';
+    return '';
+  })();
+  const extypes = [...st.extypes].join(' and ');
+  const stimHelp = stimulusFieldHelp(st.type, topicTrim, yearLabel).replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+  const exDiff = exerciseTypeDifferentiation(st.extypes);
+  const createJsonFields = st.extypes.has('create')
+    ? `"focus_points": ["exactly 5 short strings — what to focus on while composing"],
+  "sentence_starters": ["exactly 8 strings — 4–5 words each; max 4 noun-first; rest prep / time-place adverb / conjunction / participle / verb-led per STARTER MIX"]`
+    : `"focus_points": null,
+  "sentence_starters": null`;
+
+  const prompt = `You are an expert Australian English teacher creating ONE classroom exercise for a big screen.
+
+STUDENT LEVEL: ${yearLabel}
+
+${yearBandCalibration(st.year)}
+
+SELECTED WRITING TYPE (must honour exactly — do not substitute narrative description): ${st.type}
+${stageCtx}
+TOPIC / THEME FOCUS: ${topicDisplay}
+EXERCISE MODE: ${modes}
+${modeScope ? `MODE LENGTH: ${modeScope}` : ''}
+EXERCISE TYPE: ${extypes}
+TENETS: ${tenetList}
+
+EXERCISE-TYPE DIFFERENTIATION (Upgrade vs Create — follow strictly; they must NOT look the same):
+${exDiff}
+
+${writingTypeRules(st.type)}
+
+TENET DEFINITIONS:
+${TENET_DEFS}
+${narrativeBlock}
+YOUR TASK: Create ONE exercise aligned with SELECTED WRITING TYPE above. Return ONLY valid JSON — no markdown fences, no preamble:
+
+{
+  "instruction": "Leave empty string \"\" — the UI does not show this field. Put all brief/scenario text in stimulus only.",
+  "stimulus": "${stimHelp}",
+  "hint": "Craft insight at the right difficulty for ${yearLabel}. One or two sentences max.",
+  ${createJsonFields}
+}
+
+QUALITY RULES:
+- Do NOT include a separate "task" block in JSON — it is not displayed. Put all student directions in stimulus (brief), focus_points, sentence_starters, and hint only.
+- Brief card shows **stimulus only** (instruction is hidden). CREATE scenario: **≤40 words**. UPGRADE passage: full weak sample (no word limit).
+- If CREATE is selected: JSON MUST include exactly 5 focus_points and 8 sentence_starters (arrays); **sentence_starters**: at most **4** noun-first; the **other four** must be non-noun openings (prep / time-or-place adverb / subordinator / participle / strong verb-led) — never substitute arrays with prose in stimulus alone.
+- Obey EXERCISE-TYPE DIFFERENTIATION: UPGRADE centres flawed passage; CREATE centres arrays + brief scenario.
+- YEAR-BAND CALIBRATION: stimulus difficulty must match band.
+- WRITING-TYPE LOCK; tenets apply within genre.
+- Multi-tenet: weave naturally.
+- Hints: band-appropriate, NOT generic ("use better words" fails)`;
+
+  setColLoading(idx);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1800,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      throw new Error(err?.error?.message||`API error ${res.status}`);
+    }
+
+    const data   = await res.json();
+    const raw    = data.content.map(b=>b.text||'').join('');
+    const parsed = parseExerciseJson(raw);
+    renderCol(idx, parsed);
+    // clear teacher textarea on new generation
+    document.getElementById(`ta-${idx}`).value='';
+
+  } catch(e){
+    setColError(idx,e.message);
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function parseExerciseJson(raw){
+  const clean  = raw.replace(/```json|```/gi,'').trim();
+  try{
+    return JSON.parse(clean);
+  }catch(_){
+    const i=clean.indexOf('{');
+    const j=clean.lastIndexOf('}');
+    if(i>=0&&j>i){
+      try{return JSON.parse(clean.slice(i,j+1));}
+      catch(e2){throw new Error(e2.message||'Invalid JSON in model response.');}
+    }
+    throw new Error('Could not parse JSON from model response.');
+  }
+}
+function renderCreateColumns(focusPoints, starters){
+  const fp = Array.isArray(focusPoints)?focusPoints:[];
+  const ss = Array.isArray(starters)?starters:[];
+  const li=(arr,n)=>arr.slice(0,n).map(t=>`<li>${esc(String(t))}</li>`).join('');
+  return`<div class="ex-create-grid">
+    <div class="ex-create-col">
+      <div class="ex-create-col-h">What to focus on</div>
+      <ul class="ex-create-ul">${li(fp,5)}</ul>
+    </div>
+    <div class="ex-create-col">
+      <div class="ex-create-col-h">Sentence starters to consider</div>
+      <ul class="ex-create-ul">${li(ss,8)}</ul>
+    </div>
+  </div>`;
+}
+const BRIEF_MAX_WORDS = 40;
+function limitBriefWords(raw,st){
+  const t=String(raw??'').trim();
+  if(!t)return'';
+  if(st.extypes.has('upgrade'))return raw;
+  const w=t.split(/\s+/).filter(Boolean);
+  return w.length<=BRIEF_MAX_WORDS?t:w.slice(0,BRIEF_MAX_WORDS).join(' ');
+}
+function renderBrief(o,st){
+  const shown=limitBriefWords(o.stimulus??'',st);
+  if(!shown.trim())return'';
+  return`<div class="ex-brief"><div class="ex-brief-text">${esc(shown)}</div></div>`;
+}
+function renderCol(idx,d){
+  const o=d&&typeof d==='object'?d:{};
+  const st=colState[idx];
+  const gridHtml=st.extypes.has('create')?renderCreateColumns(o.focus_points,o.sentence_starters):'';
+  document.getElementById(`body-${idx}`).innerHTML=`
+    ${renderBrief(o,st)}
+    ${gridHtml}
+    <div class="ex-hint">${esc(o.hint??'')}</div>
+  `;
+  document.querySelector(`.btn-regen[data-col="${idx}"]`).disabled=false;
+}
+
+function setColLoading(idx){
+  document.querySelector(`.btn-regen[data-col="${idx}"]`).disabled=true;
+  document.getElementById(`body-${idx}`).innerHTML=`
+    <div class="col-loading">
+      <div class="spinner"></div>
+      <span class="loading-txt">generating...</span>
+    </div>`;
+}
+
+function setColError(idx,msg){
+  document.querySelector(`.btn-regen[data-col="${idx}"]`).disabled=false;
+  document.getElementById(`body-${idx}`).innerHTML=
+    `<div class="col-error">⚠ ${esc(msg)}</div>`;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function mk(tag,cls){const el=document.createElement(tag);if(cls)el.className=cls;return el;}
+function mkLbl(txt){const l=mk('span','lbl');l.textContent=txt;return l;}
+function mkSel(opts,val){
+  const s=mk('select');
+  s.className='dr-select';
+  opts.forEach(([v,l])=>{
+    const o=document.createElement('option');
+    o.value=v;o.textContent=l;if(v===val)o.selected=true;
+    s.appendChild(o);
+  });
+  return s;
+}
+function toggleSet(set,val,chip){
+  if(set.has(val)){if(set.size>1){set.delete(val);chip.classList.remove('on');}}
+  else{set.add(val);chip.classList.add('on');}
+}
+function validateApi(){
+  const k=document.getElementById('api-key').value.trim();
+  if(!k){alert('Please enter your Anthropic API key.');return false;}
+  return true;
+}
+function esc(s){
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/\n/g,'<br>');
+}
+</script>
+</body>
+</html>
